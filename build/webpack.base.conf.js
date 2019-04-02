@@ -21,12 +21,16 @@ const createLintingRule = () => ({
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
-  entry: {
-    app: './src/main.js'
-  },
+  entry: [
+    "core-js/modules/es6.promise",
+    "core-js/modules/es6.array.iterator",
+    // app: './src/main.js'
+    path.resolve(__dirname,"src/main.js")
+  ],
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
+    chunkFilename: utils.assetsPath('js/[name].[chunkhash].js'),
     publicPath: process.env.NODE_ENV === 'production'
       ? config.build.assetsPublicPath
       : config.dev.assetsPublicPath
