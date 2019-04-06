@@ -75,6 +75,8 @@ export default {
     border: 1px solid #c9c9c9;
     border-color: rgba(255,255,255,.2);
     opacity: .8;
+    min-width: 122px;
+    text-align: center;
 }
 .mod_song_toolbar > a:hover{
     opacity: 1;
