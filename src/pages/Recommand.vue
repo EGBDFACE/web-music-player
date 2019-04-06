@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="subpage_viewport">
         <p>Recommand</p>
     </div>
 </template>

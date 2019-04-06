@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
-
 // const TopNav = () => import('../components/TopNav.vue');
 // const SideBar = () => import('../components/SideBar.vue');
 // const MyFootprint = () => import('../pages/MyFootprint.vue');

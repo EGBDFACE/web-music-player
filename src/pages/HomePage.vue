@@ -59,6 +59,7 @@ export default {
     margin-bottom: 20px;
     font-size: 0;
     margin-left: 1px;
+    text-align: start;
 }
 .mod_song_toolbar > a{
     border-radius: 2px;

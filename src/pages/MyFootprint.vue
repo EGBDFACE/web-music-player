@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="subpage_viewport">
     <p>my footprite</p>
 </div>
 </template>
