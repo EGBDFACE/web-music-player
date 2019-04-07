@@ -19,7 +19,7 @@ export default {
     },
     computed:{
         hotSearch: function(){
-            console.log(this.$store.state.search.hotSearch);
+            // console.log(this.$store.state.search.hotSearch);
             return this.$store.state.search.hotSearch;
         }
     }
