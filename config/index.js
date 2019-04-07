@@ -30,6 +30,16 @@ module.exports = {
         pathRewrite: {
           '^/api/test': ''
         }
+      },
+      '/api/smartbox': {
+        target: 'https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg',
+        bypass: function(req,res,proxyOptions){
+          req.headers.referer = 'https://y.qq.com/';
+          req.headers.host = 'y.qq.com';
+        },
+        pathRewrite: {
+          '^/api/smartbox': ''
+        }
       }
     },
 
