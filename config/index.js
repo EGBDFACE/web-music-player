@@ -10,14 +10,35 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/api/getDiscList': {
+        target: 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg',
+        bypass: function (req, res, proxyOptions) {
+          req.headers.referer = 'https://c.y.qq.com';
+          req.headers.host = 'c.y.qq.com';
+        },
+        pathRewrite: {
+          '^/api/getDiscList': ''
+        }
+      },
+      '/api/test':{
+        target: 'https://u.y.qq.com/cgi-bin/musicu.fig',
+        bypass: function(req,res,proxyOptions){
+          req.headers.referer = 'https://u.y.qq.com';
+          req.headers.host = 'u.y.qq.com';
+        },
+        pathRewrite: {
+          '^/api/test': ''
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
-    notifyOnErrors: true,
+    notifyOnErrors: false,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
     // Use Eslint Loader?

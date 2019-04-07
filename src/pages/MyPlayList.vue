@@ -6,7 +6,7 @@
 
 <script>
 import axios from 'axios';
-import * as constant from '@/assets/constant';
+// import * as constant from '@/assets/constant';
 
 // axios({
 //     method: 'get',

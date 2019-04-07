@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from '@/router'
 import store from '@/store';
+
 // import "core-js/modules/es6.promise";
 // import "core-js/modules/es6.array.iterator"; 
 
