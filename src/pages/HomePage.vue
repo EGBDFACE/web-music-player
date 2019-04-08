@@ -74,6 +74,12 @@ export default {
 .player_style_normal {
     margin-right: 440px;
 }
+@media (max-width: 1300px){
+  .player_style_normal{
+      margin-right: 280px;
+  }  
+}
+
 .mod_song_toolbar{
     position: relative;
     margin-bottom: 20px;
