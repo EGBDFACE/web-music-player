@@ -5,6 +5,8 @@
             <div class="player_bd">
                 <div class="player_style_normal">
                     <div class="mod_song_toolbar">
+                        <!-- <router-link to='/OnPlayList' :class="{route_active: (nowRoute === 'OnPlayList')}" @click="setRoute('OnPlayList')">正在播放</router-link> -->
+                        <!-- <router-link to='/Recommand' :class="{route_active: (nowRoute === 'Recommand')}" @click="setRoute('Recommand')">推荐</router-link> -->
                         <router-link to='/OnPlayList'>正在播放</router-link>
                         <router-link to='/Recommand'>推荐</router-link>
                         <router-link to='/Search'>搜索</router-link>
@@ -26,9 +28,27 @@ import SideBar from '@/components/SideBar';
 
 export default {
     name: 'HomePage',
+    // data:function(){
+    //     return{
+    //         nowRoute:''
+    //     }
+    // },
     components: {
         TopNav, SideBar
-    }
+    },
+    // computed: {
+    //     nowRoute: function(){
+    //         return this.nowRoute;
+    //     }
+    // },
+    // computed:{
+    //     nowRoute: ()=>document.location.hash.slice(document.location.hash.indexOf('/')+1)
+    // }
+    // methods: {
+    //     setRoute: function(thisRoute){
+    //         this.nowRoute = thisRoute;
+    //     }
+    // }
 }
 </script>
 
@@ -61,7 +81,11 @@ export default {
     margin-left: 1px;
     text-align: start;
 }
-.mod_song_toolbar > a{
+.mod_song_toolbar  a:hover, .mod_song_toolbar .router-link-exact-active{
+    opacity: 1;
+    border-color: rgba(255,255,255,1);
+}
+.mod_song_toolbar  a{
     border-radius: 2px;
     font-size: 14px;
     margin-right: 6px;
@@ -78,8 +102,5 @@ export default {
     min-width: 122px;
     text-align: center;
 }
-.mod_song_toolbar > a:hover{
-    opacity: 1;
-    border-color: rgba(255,255,255,1);
-}
+
 </style>
