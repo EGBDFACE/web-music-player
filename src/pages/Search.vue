@@ -3,8 +3,8 @@
         <!-- <button @click='getHotSearch'>get hot search</button> -->
         <div class="searchBar">
             <input type="text" placeholder="音乐/歌手"  v-model.trim="searchContext" @input="getSearchSuggest($event.target.value)" @keyup.enter='getSearchResult($event.target.value)' @focus='setInputFocus()' @blur='setInputBlur()'/>
-            <!-- <div class="js_smartbox" v-if="inputFocus&&((searchHistory.length !=0)||(Object.keys(searchSuggest)).length !=0)"> -->
-            <div class="js_smartbox">
+            <div class="js_smartbox" v-if="inputFocus&&((searchHistory.length !=0)||(Object.keys(searchSuggest)).length !=0)">
+            <!-- <div class="js_smartbox"> -->
                 <!-- <div class="search_suggest" v-if="Object.keys(searchSuggest).length !=0">
                     <div class="search_suggest_songs" v-if="searchSuggest.order.indexOf('songs') != -1">
                         <h4>
@@ -50,7 +50,14 @@
                     </div>
                 </div>
                 <div class="search_history" v-else-if="searchHistory.length !=0">
-                    <p>show history</p>
+                    <div class="search_history_title">
+                        <p>搜索历史</p>
+                        <i></i>
+                    </div>
+                    <div class="search_history_item" v-for="(item,index) in searchHistory" :key="index">
+                        <span >{{item}}</span>
+                        <i class="icon_history_item_delete"></i>
+                    </div>
                 </div>
             </div>
             <p class="hot_search_til">热门搜索：</p>
@@ -260,12 +267,7 @@ export default {
         line-height: 36px
         color: #999
         i
-            position: absolute
             left: 18px
-            height: 16px
-            width: 16px
-            background-repeat: no-repeat
-            top: 10px
             @if $value == 'songs'
                 background-position: -20px -220px
             @if $value == 'artists'
@@ -278,18 +280,21 @@ export default {
                 background-position: -180px -160px
     .list
         border-left: 1px solid hsla(0,0%,100%,.2)
-        @if $value == 'songs'
-            border-top: 0
-        @else
-            border-top: 1px solid hsla(0,0%,100%,.1)
+        // @if $value == 'songs'
+        //     border-top: 0
+        // @else
+        border-top: 1px solid hsla(0,0%,100%,.1)
         // border-top: 1px solid #f2f2f2
         margin-left: 92px
         padding: 5px 0
         div
+            cursor: pointer
             display: block
             overflow: hidden
             white-space: nowrap
             text-overflow: ellipsis
+            &:hover
+                background-color: #1b1b1c
 .js_smartbox
     position: absolute
     width: 498px
@@ -300,9 +305,14 @@ export default {
     border: 1px solid hsla(0,0%,100%,.25)
     border-top: none
     font-size: 14px
+    i
+        position: absolute
+        height: 16px
+        width: 16px
+        background-repeat: no-repeat
+        top: 10px
+        background-image: url('../assets/images/icon_sprite.png')
     .search_suggest
-        i
-            background-image: url('../assets/images/icon_sprite.png')
         .search_suggest_songs
             @include search_suggest_common('songs')
         .search_suggest_artists
@@ -319,6 +329,40 @@ export default {
                 line-height: 36px
                 color: #999
             .search_suggest_second
-                opacity: .3  
-
+                opacity: .3
+    .search_history
+        padding-top: 5px 
+        line-height: 36px
+        font-size: 14px
+        text-align: left
+        i
+            cursor: pointer
+            top: 50%
+            margin-top: -8px
+            right: 11px
+            opacity: .5
+            background-position: -100px 0
+            &:hover
+                opacity: 1
+        .search_history_title
+            p
+                line-height: 36px
+                opacity: .5   
+            color: #999
+            position: relative
+            padding-left: 11px
+        .search_history_item
+            cursor: pointer
+            position: relative
+            span
+                color: #999
+                padding-left: 11px
+            &:hover
+                background-color: #1b1b1c
+                .icon_history_item_delete
+                    background-position: -40px -180px
+                    background-image: url('../assets/images/icon_sprite.png')
+            .icon_history_item_delete
+                margin-top: -6px
+                background-image: none
 </style>
