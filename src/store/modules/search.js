@@ -122,10 +122,10 @@ const search = {
                 url: `/search/?keywords=${selectedValue}`
             }).then(response=>{
                 console.log(response);
+                commit('getSearchResult',selectedValue);
             }).catch(err=>{
                 console.error(err.message);
             });
-            commit('getSearchResult',selectedValue);
         }
     }
 }
