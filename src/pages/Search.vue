@@ -1,41 +1,42 @@
 <template>
-    <div class="subpage_viewport">
-        <div class="searchBar">
-            <input type="text" id="searchInput" placeholder="音乐/歌手"  v-model.trim="searchContext" @input="getSearchSuggest($event.target.value)" @keyup.enter='getSearchResult($event.target.value)' @focus='setInputFocus()' @blur='setInputBlur()'/>
-            <div class="js_smartbox" v-if="inputFocus&&((searchHistory.length !=0)||(Object.keys(searchSuggest)).length !=0)" @mouseenter="setSmartBoxFocus()" @mouseleave="setSmartBoxBlur()">
-            <!-- <div class="js_smartbox" v-if="inputFocus&&((searchHistory.length != 0)||(Object.keys(searchSuggest)).length != 0)"> -->
-                <div class="search_suggest" v-if="Object.keys(searchSuggest).length !=0">
+    <div class="subpage-viewport">
+        <div class="search-bar">
+            <input type="text" autocomplete="off" id="searchInput" placeholder="音乐/歌手"  v-model.trim="searchContext" @input="getSearchSuggest($event.target.value)" @keyup.enter='getSearchResult($event.target.value)' @focus='setInputFocus()' @blur='setInputBlur()'/>
+            <div class="js-smartbox" v-if="inputFocus&&((searchHistory.length !=0)||(Object.keys(searchSuggest)).length !=0)" @mouseenter="setSmartBoxFocus()" @mouseleave="setSmartBoxBlur()">
+            <!-- <div class="js-smartbox" v-if="inputFocus&&((searchHistory.length != 0)||(Object.keys(searchSuggest)).length != 0)"> -->
+                <div class="search-suggest" v-if="Object.keys(searchSuggest).length !=0">
                     <div v-for="(item,index) in searchSuggest.order" :key="index" :class="setSearchSuggestClass(item)">
                         <h4>
                             <i></i>{{searchSuggestTitle[item]}}
                         </h4>
                         <div class="list">
                             <div v-for="(subItem,subIndex) in searchSuggest[item]" :key='subIndex'>
-                                <span class="search_suggest_first">{{subItem.name}}</span>
-                                <span v-if="(item === 'songs')" class="search_suggest_second">—{{subItem.artists[0].name}}</span>
-                                <span v-if="(item === 'mvs')" class="search_suggest_second">—{{getMVArtists(subItem.artists)}}</span>
-                                <span v-if="(item === 'albums')" class="search_suggest_second">-{{subItem.artist.name}}</span>
+                                <span class="search-suggest-first">{{subItem.name}}</span>
+                                <span v-if="(item === 'songs')" class="search-suggest-second">—{{subItem.artists[0].name}}</span>
+                                <span v-if="(item === 'mvs')" class="search-suggest-second">—{{getMVArtists(subItem.artists)}}</span>
+                                <span v-if="(item === 'albums')" class="search-suggest-second">-{{subItem.artist.name}}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="search_history" v-else-if="searchHistory.length !=0">
-                <!-- <div class="search_history" v-else-if="searchHistory.length != 0" @mouseenter="set"> -->
-                    <div class="search_history_title">
+                <div class="search-history" v-else-if="searchHistory.length !=0">
+                <!-- <div class="search-history" v-else-if="searchHistory.length != 0" @mouseenter="set"> -->
+                    <div class="search-history-title">
                         <p>搜索历史</p>
                         <i @click="clearSearchHistory()"></i>
                     </div>
-                    <div class="search_history_item" v-for="(item,index) in searchHistory" :key="index">
+                    <div class="search-history-item" v-for="(item,index) in searchHistory" :key="index">
                         <p @click="getSearchResult(item)">{{item}}</p>
-                        <i class="icon_history_item_delete" @click="delSearchHistoryItem(index)"></i>
+                        <i class="icon-history-item-delete" @click="delSearchHistoryItem(index)"></i>
                     </div>
                 </div>
             </div>
             <div style="text-align: center">
-                <p class="hot_search_til">热门搜索：</p>
-                <span class="hot_search_list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
+                <p class="hot-search-til">热门搜索：</p>
+                <span class="hot-search-list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
             </div>
         </div>
+        <SongList :songs="songs" v-if="songs.length != 0"></SongList>
     </div>
 </template>
 
@@ -44,6 +45,7 @@ import { mapActions,mapState,mapGetters, mapMutations } from 'vuex';
 import store from '@/store';
 import axios from 'axios';
 import { BASE_URL } from '@/assets/constant.js';
+import SongList from '@/components/SongList.vue';
 
 export default {
     name: 'search',
@@ -66,6 +68,9 @@ export default {
             }
         }
     },
+    components: {
+        SongList
+    },
     created(){
         axios({
             method: 'get',
@@ -85,7 +90,7 @@ export default {
     },
     methods:{
         setSearchSuggestClass(value){
-            return `search_suggest_${value}`;
+            return `search-suggest-${value}`;
         },
         getMVArtists(value){
             let all_artists = '';
@@ -181,8 +186,10 @@ export default {
 }
 </script>
 <style lang='sass'>
-.searchBar
-    .hot_search_list
+.search-bar
+    position: relative
+    margin-top: 40px
+    .hot-search-list
         line-height: 40px
         margin-right: 15px
         cursor: pointer
@@ -203,10 +210,10 @@ export default {
         border: 1px solid hsla(0,0%,100%,.6)
         outline: 0
         opacity: .8
-    .hot_search_til
+    .hot-search-til
         display: inline
         opacity: .3 
-@mixin search_suggest_common($value)
+@mixin search-suggest-common($value)
     position: relative
     padding: 0
     h4
@@ -246,7 +253,7 @@ export default {
             text-overflow: ellipsis
             &:hover
                 background-color: #1b1b1c
-.js_smartbox
+.js-smartbox
     position: absolute
     width: 498px
     left: 50%
@@ -265,25 +272,25 @@ export default {
         background-repeat: no-repeat
         top: 10px
         background-image: url('../assets/images/icon_sprite.png')
-    .search_suggest
-        .search_suggest_songs
-            @include search_suggest_common('songs')
-        .search_suggest_artists
-            @include search_suggest_common('artists')
-        .search_suggest_albums
-            @include search_suggest_common('albums')
-        .search_suggest_mvs
-            @include search_suggest_common('mvs')
-        .search_suggest_playlists
-            @include search_suggest_common('playlists')
+    .search-suggest
+        .search-suggest-songs
+            @include search-suggest-common('songs')
+        .search-suggest-artists
+            @include search-suggest-common('artists')
+        .search-suggest-albums
+            @include search-suggest-common('albums')
+        .search-suggest-mvs
+            @include search-suggest-common('mvs')
+        .search-suggest-playlists
+            @include search-suggest-common('playlists')
         .list
-            .search_suggest_first
+            .search-suggest-first
                 padding-left: 41px
                 line-height: 36px
                 color: #999
-            .search_suggest_second
+            .search-suggest-second
                 opacity: .3
-    .search_history
+    .search-history
         padding-top: 5px 
         line-height: 36px
         font-size: 14px
@@ -297,14 +304,14 @@ export default {
             background-position: -100px 0
             &:hover
                 opacity: 1
-        .search_history_title
+        .search-history-title
             p
                 line-height: 36px
                 opacity: .5   
             color: #999
             position: relative
             padding-left: 11px
-        .search_history_item
+        .search-history-item
             cursor: pointer
             position: relative
             p
@@ -312,10 +319,10 @@ export default {
                 padding-left: 11px
             &:hover
                 background-color: #1b1b1c
-                .icon_history_item_delete
+                .icon-history-item-delete
                     background-position: -40px -180px
                     background-image: url('../assets/images/icon_sprite.png')
-            .icon_history_item_delete
+            .icon-history-item-delete
                 margin-top: -6px
                 background-image: none
 </style>
