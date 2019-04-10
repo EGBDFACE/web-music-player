@@ -1,39 +1,9 @@
 <template>
     <div class="subpage_viewport">
-        <!-- <button @click='getHotSearch'>get hot search</button> -->
         <div class="searchBar">
-            <input type="text" placeholder="音乐/歌手"  v-model.trim="searchContext" @input="getSearchSuggest($event.target.value)" @keyup.enter='getSearchResult($event.target.value)' @focus='setInputFocus()' @blur='setInputBlur()'/>
-            <div class="js_smartbox" v-if="inputFocus&&((searchHistory.length !=0)||(Object.keys(searchSuggest)).length !=0)">
-            <!-- <div class="js_smartbox"> -->
-                <!-- <div class="search_suggest" v-if="Object.keys(searchSuggest).length !=0">
-                    <div class="search_suggest_songs" v-if="searchSuggest.order.indexOf('songs') != -1">
-                        <h4>
-                            <i></i>单曲
-                        </h4>
-                        <div class="list">
-                            <div  v-for="(item,index) in searchSuggest.songs" :key="index">
-                                <span class="search_suggest_first">{{item.name}}</span>
-                                <span class="search_suggest_second">—{{item.artists[0].name}}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="search_suggest_artists" v-if="searchSuggest.order.indexOf('artists') != -1">
-                        <h4>
-                            <i></i>歌手
-                        </h4>
-                        <div class="list">
-                            <div v-for="(item,index) in searchSuggest.artists" :key="index">
-                                <span class="search_suggest_first">{{item.name}}</span>
-                            </div>
-                        </div>
-                    </div> -->
-                    <!-- <div class="search_suggest_albums" v-if="searchSuggest.order.indexOf('albums') != -1">
-                        <h4>
-                            <i></i>专辑
-                        </h4>
-                        <div class="list">
-                            <div v-for="(item,index) in searchSuggest.albums" :key="index">
-                    </div> -->
+            <input type="text" id="searchInput" placeholder="音乐/歌手"  v-model.trim="searchContext" @input="getSearchSuggest($event.target.value)" @keyup.enter='getSearchResult($event.target.value)' @focus='setInputFocus()' @blur='setInputBlur()'/>
+            <div class="js_smartbox" v-if="inputFocus&&((searchHistory.length !=0)||(Object.keys(searchSuggest)).length !=0)" @mouseenter="setSmartBoxFocus()" @mouseleave="setSmartBoxBlur()">
+            <!-- <div class="js_smartbox" v-if="inputFocus&&((searchHistory.length != 0)||(Object.keys(searchSuggest)).length != 0)"> -->
                 <div class="search_suggest" v-if="Object.keys(searchSuggest).length !=0">
                     <div v-for="(item,index) in searchSuggest.order" :key="index" :class="setSearchSuggestClass(item)">
                         <h4>
@@ -50,18 +20,21 @@
                     </div>
                 </div>
                 <div class="search_history" v-else-if="searchHistory.length !=0">
+                <!-- <div class="search_history" v-else-if="searchHistory.length != 0" @mouseenter="set"> -->
                     <div class="search_history_title">
                         <p>搜索历史</p>
-                        <i></i>
+                        <i @click="clearSearchHistory()"></i>
                     </div>
                     <div class="search_history_item" v-for="(item,index) in searchHistory" :key="index">
-                        <span >{{item}}</span>
-                        <i class="icon_history_item_delete"></i>
+                        <p @click="getSearchResult(item)">{{item}}</p>
+                        <i class="icon_history_item_delete" @click="delSearchHistoryItem(index)"></i>
                     </div>
                 </div>
             </div>
-            <p class="hot_search_til">热门搜索：</p>
-            <span class="hot_search_list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
+            <div style="text-align: center">
+                <p class="hot_search_til">热门搜索：</p>
+                <span class="hot_search_list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -72,24 +45,12 @@ import store from '@/store';
 import axios from 'axios';
 import { BASE_URL } from '@/assets/constant.js';
 
-// store.dispatch('getHotSearch');
-// this.getHotSearch();
-// console.log(this.$store.state.search.hotSearch);
-// const hotsCache = [];
-// axios({
-//     method: 'get',
-//     baseURL: BASE_URL,
-//     url: '/search/hot'
-// }).then(res=>{
-//     for(let i=0;i<5;i++){
-//         hotsCache[i]= res.data.result.hots[i].firse;
-//     }
-// });
 export default {
     name: 'search',
     data(){
         return{
             inputFocus: false,
+            smartBoxFocus: false,
             searchContext: '',
             songs: [],
             // hots: hotsCache
@@ -106,7 +67,6 @@ export default {
         }
     },
     created(){
-        // this.getHotSearch();
         axios({
             method: 'get',
             baseURL: BASE_URL,
@@ -124,41 +84,8 @@ export default {
         });
     },
     methods:{
-        // ...mapActions([
-            // 'getHotSearch',
-            // 'getSearchSuggest',
-            // 'setSearchContext',
-            // 'getSearchResult'
-        // ]),
-        // getHotSearch(){
-        //     axios({
-        //         method: 'get',
-        //         baseURL: BASE_URL,
-        //         url: '/search/hot'
-        //     }).then(res=>{
-        //         // console.log(res);
-        //         for(let i=0;i<5;i++){
-        //             this.hots[i] = res.data.result.hots[i].first;
-        //             // hotsCache[i] = res.data.result.hots[i].first;
-        //         }
-        //     }).catch(err=>{
-        //         console.error(err.message);
-        //     });
-        // },
         setSearchSuggestClass(value){
             return `search_suggest_${value}`;
-            // switch(value){
-            //     case 'songs':
-            //         return 'search_suggest_songs';
-            //     case 'artists':
-            //         return 'search_suggest_artists';
-            //     case 'albums':
-            //         return 'search_suggest_albums';
-            //     case 'mvs':
-            //         return 'search_suggest_mvs';
-            //     case 'playlists':
-            //         return 'search_suggest_play'
-            // }
         },
         getMVArtists(value){
             let all_artists = '';
@@ -193,41 +120,64 @@ export default {
                 if(this.searchHistory.indexOf(value) === -1){
                     this.searchHistory.push(value);
                 }
+                // else{
+                //     console.log('history item search');
+                    
+                // }
+                this.inputFocus = false;
+                this.smartBoxFocus = false;
+                document.getElementById('searchInput').blur();
             }).catch(err=>{
                 console.error(err.message);
             });
         },
         setInputFocus(){
+            // console.log(this);
             this.inputFocus = true;
+            // setTimeout(function(){
+            //     this.inputFocus = true;
+            // },1000);
         },
         setInputBlur(){
-            this.inputFocus = false;
+            // this.inputFocus = false;
+            // (function(that){
+            //     setTimeout(function(){
+            //         // console.log(that);
+            //         that.inputFocus = false;
+            //     },1000);
+            // })(this);
+            console.log('input blur');
+            console.log(this.smartBoxFocus);
+            if(!this.smartBoxFocus){
+                this.inputFocus = false;
+            }else{
+                document.getElementById('searchInput').focus();
+            }
+        },
+        setSmartBoxFocus(){
+            console.log('mouse enter');
+            this.smartBoxFocus = true;
+        },
+        setSmartBoxBlur(){
+            console.log('mouse leave');
+            this.smartBoxFocus = false;
+        },
+        delSearchHistoryItem(value){
+            // document.getElementById('searchInput').focus();
+            console.log('affect');
+            this.searchHistory.splice(value,1);
+            // (function(that){
+            //     setTimeout(function(){
+            //         // console.log(that);
+            //         that.inputFocus = true;
+            //     },1000);
+            // })(this);
+        },
+        clearSearchHistory(){
+            this.searchHistory = [];
+            // this.inputFocus = true;
         }
-        // ...mapMutations([
-
-        // ])
-    },
-    computed:{
-        // ...mapGetters([
-        //     'hotSearchString',
-        //     // 'searchContext'
-        // ]),
-        // ...mapState({
-        //     // searchContext: state=>state.search.searchContext,
-            // searchHistory: state=>state.search.searchHistory,
-        //     searchSuggest: state=>state.search.searchSuggest
-        // })
     }
-    // computed:mapState({
-    //     hotSearch: state=>state.search.hotSearch
-    // })
-        // mapState([
-        //     'hotSearch'
-        // ])
-        // hotSearch: function(){
-        //     // console.log(this.$store.state.search.hotSearch);
-        //     return this.$store.state.search.hotSearch;
-        // }
 }
 </script>
 <style lang='sass'>
@@ -241,6 +191,7 @@ export default {
             opacity: 1
     input
         // background-color: rgba(0,0,0,.2)
+        margin: 0 auto
         background-color: #292a2b
         display: block
         width: 500px
@@ -298,6 +249,8 @@ export default {
 .js_smartbox
     position: absolute
     width: 498px
+    left: 50%
+    margin-left: -250px
     // background-color: rgba(0,0,0,.8)
     background-color: #292a2b
     z-index: 1
@@ -354,7 +307,7 @@ export default {
         .search_history_item
             cursor: pointer
             position: relative
-            span
+            p
                 color: #999
                 padding-left: 11px
             &:hover
