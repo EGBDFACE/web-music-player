@@ -12,8 +12,8 @@
                         <div class="list">
                             <div v-for="(subItem,subIndex) in searchSuggest[item]" :key='subIndex'>
                                 <span class="search-suggest-first">{{subItem.name}}</span>
-                                <span v-if="(item === 'songs')" class="search-suggest-second">—{{subItem.artists[0].name}}</span>
-                                <span v-if="(item === 'mvs')" class="search-suggest-second">—{{getMVArtists(subItem.artists)}}</span>
+                                <span v-if="(item === 'songs')" class="search-suggest-second">—{{getSearchSuggestArtists(subItem.artists)}}</span>
+                                <span v-if="(item === 'mvs')" class="search-suggest-second">—{{getSearchSuggestArtists(subItem.artists)}}</span>
                                 <span v-if="(item === 'albums')" class="search-suggest-second">-{{subItem.artist.name}}</span>
                             </div>
                         </div>
@@ -92,10 +92,11 @@ export default {
         setSearchSuggestClass(value){
             return `search-suggest-${value}`;
         },
-        getMVArtists(value){
+        getSearchSuggestArtists(value){
             let all_artists = '';
             for(let i=0;i<value.length;i++){
-                all_artists += value[i].name + '\t';
+                // all_artists += value[i].name + '\t';
+                all_artists += (i>0 ? ' / '+value[i].name : value[i].name);
             }
             return all_artists;
         },

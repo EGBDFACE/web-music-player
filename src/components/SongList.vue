@@ -19,15 +19,24 @@
             <span class="song-list__item__name__txt">{{item.name}}</span>
           </div>
           <div class="song-list__item__artists">
-            
+            <div v-if="item.artists.length === 1">
+              <span class="song-list__item__artist__txt">{{item.artists[0].name}}</span>
+            </div>
+            <div v-else-if="item.artists.length != 1">
+              <div v-for="(artist,subIndex) in item.artists" :key="subIndex">
+                <span class="song-list__item__artist__txt">{{artist.name}}</span>
+                <span v-if="subIndex != item.artists.length-1 "> / </span>
+              </div>
+            </div>
           </div>
+          <div class="song-list__item__duration">{{getSongDuration(item.duration)}}</div>
         </div>
       </li>
     </ul>
   </div>  
 </template>
 <script>
-
+ 
 export default {
     name: 'SongsList',
     props: {
@@ -36,6 +45,24 @@ export default {
         default: () =>{
           return []
         }
+      }
+    },
+    methods: {
+      getSongDuration(value){
+        let minute = Math.floor((value/1000)/60);
+        let second = Math.floor(value/1000) - minute*60;
+        let sMinute,sSecond;
+        if(minute < 10){
+          sMinute = '0'+minute;
+        }else{
+          sMinute = minute;
+        }
+        if(second < 10){
+          sSecond = '0'+second;
+        }else{
+          sSecond = second;
+        }
+        return sMinute + ':' + sSecond;
       }
     }
 }
@@ -88,7 +115,7 @@ export default {
 .song-list__header-author
   width: 26%
   float: left
-  paddign-left: 20px
+  padding-left: 20px
   box-sizing: border-box
 .song-list__header-time
   position: absolute
@@ -135,6 +162,7 @@ export default {
   white-space: normal
   @include song-list-item-common
 .song-list__item__name__txt
+  width: 399px
   float: left
   overflow: hidden
   text-overflow: ellipsis
@@ -146,6 +174,21 @@ export default {
   float: left
   padding-left: 20px
   box-sizing: border-box
+  white-space: nowrap
   @include song-list-item-common
+  div
+    display: inline
+.song-list__item__artist__txt
+  cursor: pointer
+  color: rgba(255,255,255,.8)
+  &:hover
+    color: #fff
+.song-list__item__duration
+  @include song-list-item-common
+  position: absolute
+  top: 0
+  right: 38px
+  width: 50px
+  color: inherit
 </style>
 
