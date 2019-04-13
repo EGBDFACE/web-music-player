@@ -4,9 +4,18 @@
         <li class="song-list__edit sprite">
           <input type="checkbox"/>
         </li>
-        <li class="song-list__header-name">歌曲</li>
+        <li class="song-list__header-name">
+          <span>歌曲</span>
+          <div class="mod_list_menu">
+              <i class="list_menu__icon_play"></i>
+              <i class="list_menu__icon_add"></i>
+              <i class="list_menu__icon_down"></i>
+              <i class="list_menu__icon_share"></i>
+            </div>
+          </li>
         <li class="song-list__header-author">歌手</li>
         <li class="song-list__header-time">时长</li>
+        <i class="list_menu__icon_delete"></i>
     </ul>
     <ul class="song-list__list">
       <li v-for="(item,index) in songs" :key="index">
@@ -17,19 +26,26 @@
           <div class="song-list__item__number">{{index + 1 }}</div>
           <div class="song-list__item__name">
             <span class="song-list__item__name__txt">{{item.name}}</span>
+            <div class="mod_list_menu">
+              <i class="list_menu__icon_play"></i>
+              <i class="list_menu__icon_add"></i>
+              <i class="list_menu__icon_down"></i>
+              <i class="list_menu__icon_share"></i>
+            </div>
           </div>
           <div class="song-list__item__artists">
             <div v-if="item.artists.length === 1">
-              <span class="song-list__item__artist__txt">{{item.artists[0].name}}</span>
+              <span class="song-list__item__artist__txt">{{standardizationArtistName(item.artists[0].name)}}</span>
             </div>
             <div v-else-if="item.artists.length != 1">
               <div v-for="(artist,subIndex) in item.artists" :key="subIndex">
-                <span class="song-list__item__artist__txt">{{artist.name}}</span>
+                <span class="song-list__item__artist__txt">{{standardizationArtistName(artist.name)}}</span>
                 <span v-if="subIndex != item.artists.length-1 "> / </span>
               </div>
             </div>
           </div>
           <div class="song-list__item__duration">{{getSongDuration(item.duration)}}</div>
+          <i class="list_menu__icon_delete"></i>
         </div>
       </li>
     </ul>
@@ -63,13 +79,21 @@ export default {
           sSecond = second;
         }
         return sMinute + ':' + sSecond;
+      },
+      standardizationArtistName(value){
+        let result = value;
+        if((value.indexOf('【') != -1)||(value.indexOf('】') != -1)){
+          result = value.replace(/【|】/g,'');
+        }
+        return result;
       }
     }
 }
 </script>
 <style lang='sass'>
 .sprite
-  background-image: url('../assets/images/icon_sprite.png')
+  background-image: url('../assets/images/icon_sprite2X.png')
+  background-size: 200px
   opacity: .2
   &:hover
     opacity: 1
@@ -190,5 +214,59 @@ export default {
   right: 38px
   width: 50px
   color: inherit
+.mod_list_menu
+  position: absolute
+  right: 0px
+  top: 50%
+  margin-top: -18px
+  overflow: hidden
+  opacity: 0
+  pointer-events: none
+  font-size: 0
+  height: 36px
+@mixin list_menu__item
+  background-image: url('../assets/images/icon_list_menu2X.png')
+  opacity: .5
+  background-size: 200px auto
+  display: inline-block
+  width: 36px
+  height: 36px
+  background-repeat: no-repeat
+  margin-right: 5px
+  cursor: pointer
+  &:hover
+    opacity: 1
+.list_menu__icon_play
+  @include list_menu__item
+  background-position: -120px 0
+.list_menu__icon_add
+  @include list_menu__item
+  background-position: -120px -80px
+.list_menu__icon_down
+  @include list_menu__item
+  background-position: -120px -120px
+.list_menu__icon_share
+  @include list_menu__item
+  background-position: -120px -40px
+.song-list__header,.song-list__item
+  &:hover
+    .mod_list_menu
+      opacity: 1
+      pointer-events: inherit
+    .song-list__item__duration,.song-list__header-time
+      opacity: 0
+      pointer-events: none
+    .list_menu__icon_delete
+      opacity: .5
+      &:hover
+        opacity: 1
+.list_menu__icon_delete
+  position: absolute
+  @include list_menu__item
+  right: 50px
+  background-position: -120px -160px
+  opacity: 0
+  margin-top: -18px
+  top: 50%
 </style>
 

@@ -272,7 +272,8 @@ export default {
         width: 16px
         background-repeat: no-repeat
         top: 10px
-        background-image: url('../assets/images/icon_sprite.png')
+        background-image: url('../assets/images/icon_sprite2X.png')
+        background-size: 200px
     .search-suggest
         .search-suggest-songs
             @include search-suggest-common('songs')
