@@ -36,7 +36,7 @@
                 <span class="hot-search-list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
             </div>
         </div>
-        <SongList :songs="songs" v-if="songs.length != 0"></SongList>
+        <SongList :songs="state_searchResult" :deleteItem="delSearchResultItem" :selectItem="selSearchResultItem" :selectAll="selAllSearchResultItem" v-if="state_searchResult.length != 0"></SongList>
     </div>
 </template>
 
@@ -123,6 +123,10 @@ export default {
                 console.log(res);
                 this.searchContext = value;
                 this.songs = res.data.result.songs;
+                for(let i=0;i<this.songs.length;i++){
+                    this.songs[i].selected = false;
+                }
+                this.setSearchResult(this.songs);
                 if(this.searchHistory.indexOf(value) === -1){
                     this.searchHistory.push(value);
                 }
@@ -182,6 +186,17 @@ export default {
         clearSearchHistory(){
             this.searchHistory = [];
             // this.inputFocus = true;
+        },
+        ...mapMutations([
+            'setSearchResult',
+            'delSearchResultItem',
+            'selSearchResultItem',
+            'selAllSearchResultItem'
+        ])
+    },
+    computed: {
+        state_searchResult(){
+            return this.$store.state.search.searchResult;
         }
     }
 }

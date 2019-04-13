@@ -1,8 +1,8 @@
 <template>
   <div class="song-list__overview">
     <ul class="song-list__header">
-        <li class="song-list__edit sprite">
-          <input type="checkbox"/>
+        <li class="song-list__edit sprite" :style="selectAllLabelStyle">
+          <input type="checkbox" @click="selectAll()" />
         </li>
         <li class="song-list__header-name">
           <span>歌曲</span>
@@ -20,8 +20,8 @@
     <ul class="song-list__list">
       <li v-for="(item,index) in songs" :key="index">
         <div class="song-list__item">
-          <div class="song-list__item__edit sprite">
-            <input type="checkbox" />
+          <div class="song-list__item__edit sprite" :style="selectedItemLabelStyle(index)">
+            <input type="checkbox"  @click="selectItem(index)" />
           </div>
           <div class="song-list__item__number">{{index + 1 }}</div>
           <div class="song-list__item__name">
@@ -45,7 +45,7 @@
             </div>
           </div>
           <div class="song-list__item__duration">{{getSongDuration(item.duration)}}</div>
-          <i class="list_menu__icon_delete"></i>
+          <i class="list_menu__icon_delete" @click="deleteItem(index)"></i>
         </div>
       </li>
     </ul>
@@ -55,13 +55,28 @@
  
 export default {
     name: 'SongsList',
+    data: function(){
+      return {
+        selectedItems: [],
+        // songs : this.initialSongs.map(value=>{
+        //   return{
+        //     ...value,
+        //     selected: false
+        //   }
+        // }),
+        selectAllIconStyle: null
+      }
+    },
     props: {
       songs: {
         type: Array,
         default: () =>{
           return []
         }
-      }
+      },
+      deleteItem: {},
+      selectItem: {},
+      selectAll: {}
     },
     methods: {
       getSongDuration(value){
@@ -86,8 +101,62 @@ export default {
           result = value.replace(/【|】/g,'');
         }
         return result;
+      },
+      // deleteSongListItem(index){
+      //   // this.songs.splice(index,1);
+      //   this.deleteItem(index);
+      // },
+      // setSelectedItems(index){
+      //   // this.songs[index].selected = !this.songs[index].selected;
+      //   this.selectItem(index);
+      // },
+      selectedItemLabelStyle(index){
+        if((this.songs[index])&&(this.songs[index].selected)){
+          return {
+            backgroundPosition: '-60px -80px',
+            opacity: 1
+          }
+        }else{
+          return null
+        }
       }
+      // setAllItemsSelected(value){
+      //   // console.log(value);
+      //   // for(let i=0;i<this.songs.length;i++){
+      //   //   this.songs[i].selected = value;
+      //   // }
+      //   this.selectAll(value);
+      //   this.selectAllIconStyle = value ? {
+      //     backgroundPosition: '-60px -80px',
+      //     opacity: 1
+      //   } : null;
+      // }
+    },
+    computed: {
+      selectAllLabelStyle(){ 
+        let select_all_style = {
+          backgroundPosition: '-60px -80px',
+          opacity: 1
+        };
+        for(let i=0;i<this.songs.length;i++){
+          if(!this.songs[i].selected){
+            return null; 
+          }
+        }
+        return select_all_style;
+      }
+      // selectedItemLabelStyle: function(index){
+      //   if((this.songs[index])&&(this.songs[index].selected)){
+      //     return {
+      //       backgroundPosition: '-60px -80px',
+      //       opacity: 1
+      //     }
+      //   }else{
+      //     return null
+      //   }
+      // }
     }
+  
 }
 </script>
 <style lang='sass'>
@@ -162,7 +231,7 @@ export default {
   overflow: hidden
   text-overflow: ellipsis
   font-size: 14px
-  opacity: .8
+  // opacity: .8
 .song-list__item__edit
   @extend .song-list__edit
 .song-list__item__number
