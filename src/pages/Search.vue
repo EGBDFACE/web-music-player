@@ -36,7 +36,7 @@
                 <span class="hot-search-list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
             </div>
         </div>
-        <SongList :songs="state_searchResult" :deleteItem="delSearchResultItem" :selectItem="selSearchResultItem" :selectAll="selAllSearchResultItem" v-if="state_searchResult.length != 0"></SongList>
+        <SongList :songs="state_searchResult" :deleteItem="delSearchResultItem" :selectItem="selSearchResultItem" :selectAll="selAllSearchResultItem" :deleteAll="delAllSearchResultItem" v-if="state_searchResult.length != 0"></SongList>
     </div>
 </template>
 
@@ -191,7 +191,8 @@ export default {
             'setSearchResult',
             'delSearchResultItem',
             'selSearchResultItem',
-            'selAllSearchResultItem'
+            'selAllSearchResultItem',
+            'delAllSearchResultItem'
         ])
     },
     computed: {

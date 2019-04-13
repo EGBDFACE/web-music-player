@@ -68,6 +68,16 @@ const search = {
                     selected: v
                 }
             });
+        },
+        delAllSearchResultItem(state){
+            let filterSelectedList = [];
+            let index = 0;
+            for(let i=0;i<state.searchResult.length;i++){
+                if(!state.searchResult[i].selected){
+                    filterSelectedList[index++] = state.searchResult[i];
+                }
+            }
+            state.searchResult = filterSelectedList;
         }
         // getHotSearch(state,resultHot){
         //     // console.log(state);

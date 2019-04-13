@@ -15,7 +15,7 @@
           </li>
         <li class="song-list__header-author">歌手</li>
         <li class="song-list__header-time">时长</li>
-        <i class="list_menu__icon_delete"></i>
+        <i class="list_menu__icon_delete" @click="deleteAll()"></i>
     </ul>
     <ul class="song-list__list">
       <li v-for="(item,index) in songs" :key="index">
@@ -76,7 +76,8 @@ export default {
       },
       deleteItem: {},
       selectItem: {},
-      selectAll: {}
+      selectAll: {},
+      deleteAll: {}
     },
     methods: {
       getSongDuration(value){
