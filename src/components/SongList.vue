@@ -7,7 +7,7 @@
         <li class="song-list__header-name">
           <span>歌曲</span>
           <div class="mod_list_menu">
-              <i class="list_menu__icon_play"></i>
+              <i class="list_menu__icon_play" @click="setOnPlayList(addPlayList)"></i>
               <i class="list_menu__icon_add"></i>
               <i class="list_menu__icon_down"></i>
               <i class="list_menu__icon_share"></i>
@@ -27,7 +27,7 @@
           <div class="song-list__item__name">
             <span class="song-list__item__name__txt">{{item.name}}</span>
             <div class="mod_list_menu">
-              <i class="list_menu__icon_play"></i>
+              <i class="list_menu__icon_play" @click="setOnPlayList(item)"></i>
               <i class="list_menu__icon_add"></i>
               <i class="list_menu__icon_down"></i>
               <i class="list_menu__icon_share"></i>
@@ -77,7 +77,8 @@ export default {
       deleteItem: {},
       selectItem: {},
       selectAll: {},
-      deleteAll: {}
+      deleteAll: {},
+      setOnPlayList: {}
     },
     methods: {
       getSongDuration(value){
@@ -145,6 +146,15 @@ export default {
           }
         }
         return select_all_style;
+      },
+      addPlayList(){
+        let selectedItemArray = [];
+        for(let i=0;i<this.songs.length;i++){
+          if(this.songs[i].selected){
+            selectedItemArray.push(this.songs[i]);
+          }
+        }
+        return selectedItemArray;
       }
       // selectedItemLabelStyle: function(index){
       //   if((this.songs[index])&&(this.songs[index].selected)){
