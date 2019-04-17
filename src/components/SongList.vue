@@ -6,8 +6,8 @@
         </li>
         <li class="song-list__header-name">
           <span>歌曲</span>
-          <div class="mod_list_menu">
-              <i class="list_menu__icon_play" @click="setOnPlayList(addPlayList)"></i>
+          <div class="mod_list_menu" :style="modListMenuStyle(addPlayList)">
+              <i class="list_menu__icon_play" @click="setPlayList(addPlayList)" :style="headerListMenuPlayStyle(addPlayList)"></i>
               <i class="list_menu__icon_add"></i>
               <i class="list_menu__icon_down"></i>
               <i class="list_menu__icon_share"></i>
@@ -15,7 +15,7 @@
           </li>
         <li class="song-list__header-author">歌手</li>
         <li class="song-list__header-time">时长</li>
-        <i class="list_menu__icon_delete" @click="deleteAll()"></i>
+        <i class="list_menu__icon_delete" @click="deleteAll()" :style="headerMenuDelete(addPlayList)"></i>
     </ul>
     <ul class="song-list__list">
       <li v-for="(item,index) in songs" :key="index">
@@ -27,7 +27,7 @@
           <div class="song-list__item__name">
             <span class="song-list__item__name__txt">{{item.name}}</span>
             <div class="mod_list_menu">
-              <i class="list_menu__icon_play" @click="setOnPlayList(item)"></i>
+              <i class="list_menu__icon_play" @click="setPlaySong(item)"></i>
               <i class="list_menu__icon_add"></i>
               <i class="list_menu__icon_down"></i>
               <i class="list_menu__icon_share"></i>
@@ -78,7 +78,21 @@ export default {
       selectItem: {},
       selectAll: {},
       deleteAll: {},
-      setOnPlayList: {}
+      setPlayList: {
+        type: Function,
+        default: v=>{
+          return null
+        }
+      },
+      setPlaySong: {},
+      modListMenuStyle: {},
+      headerMenuDelete: {},
+      headerListMenuPlayStyle:{
+        type: Function,
+        default: v=>{
+          return null;
+        }
+      }
     },
     methods: {
       getSongDuration(value){
@@ -155,7 +169,13 @@ export default {
           }
         }
         return selectedItemArray;
+      },
+      onPlaySong(){
+        return this.$store.state.onPlaySong;
       }
+      // activeListMenuStyle(){
+      //   return this.addPlayList.length > 0 ? null : { display : 'none' };
+      // }
       // selectedItemLabelStyle: function(index){
       //   if((this.songs[index])&&(this.songs[index].selected)){
       //     return {

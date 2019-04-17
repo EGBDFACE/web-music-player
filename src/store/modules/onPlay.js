@@ -1,64 +1,94 @@
+import * as types from '../mutationTypes';
+
 const onPlay = {
     state: {
         onPlayList: []
     },
     mutations: {
-        setOnPlayList(state,value){
+        [types.SET_PLAY_LIST](state,value){
+            state.onPlayList = value;
+        },
+        [types.SEL_PLAY_LIST_ITEM](state,value){
+            state.onPlayList = value;
+        },
+        [types.SEL_ALL_PLAY_LIST_ITEM](state,value){
+            state.onPlayList = value;
+        },
+        [types.DEL_PLAY_LIST_ITEM](state,index){
+            state.onPlayList.splice(index,1);
+        },
+        [types.DEL_ALL_PLAY_LIST_ITEM](state,value){
+            state.onPlayList = value;
+        }
+    },
+    actions: {
+        setPlayList({commit,state},value){
+            let newList = JSON.parse(JSON.stringify(state.onPlayList));
             if(isArray(value)){
-                for(let i=0;i<value.length;i++){
-                    for(var j=0;j<state.onPlayList.length;j++){
+                for(let i=0; i<value.length; i++){
+                    let existItemFlag = false;
+                    for(let j=0; j<state.onPlayList.length; j++){
                         if(state.onPlayList[j].id === value[i].id){
+                            existItemFlag = true;
                             break;
                         }
                     }
-                    if(j === state.onPlayList.length){
-                        state.onPlayList.push({
+                    if(!existItemFlag){
+                        newList.push({
                             ...value[i],
-                            selected: false,
-                            onPlayFlag: (i === 0) ? true : false
+                            selected: false
                         });
                     }
                 }
             }else{
-                for(let i=0;i<state.onPlayList.length;i++){
-                    if(state.onPlayList[i].id === value.id){
-                        return null;
+                if(!state.onPlayList.length){
+                    newList.push({
+                        ...value,
+                        selected: false
+                    })
+                }
+                for(let i=0; i<state.onPlayList.length; i++){
+                    if(state.onPlayList[i].id !== value.id){
+                        newList.push({
+                            ...value,
+                            selected: false
+                        });
                     }
                 }
-                state.onPlayList = state.onPlayList.map(v=>{
-                    return {
-                        ...v,
-                        onPlayFlag:false,
-                        selected: false
-                    }
-                });
-                state.onPlayList.push({
-                    ...value,
-                    onPlayFlag: true,
-                    selected: false
-                });
             }
+            commit(types.SET_PLAY_LIST,newList);
         },
-        selPlayListItem(state,index){
-            state.onPlayList = JSON.parse(JSON.stringify(state.onPlayList));
-            state.onPlayList[index].selected = !state.onPlayList[index].selected;
+        selPlayListItem({commit,state},index){
+            let value = JSON.parse(JSON.stringify(state.onPlayList));
+            value[index].selected = !value[index].selected;
+            commit(types.SEL_PLAY_LIST_ITEM,value);
         },
-        selAllPlayListItem(state){
+        selAllPlayListItem({commit,state}){
             let v = false;
-            for(let i=0;i<state.onPlayList.length;i++){
+            for(let i=0; i<state.onPlayList.length; i++){
                 if(!state.onPlayList[i].selected){
                     v = true;
                 }
             }
-            state.onPlayList = state.onPlayList.map(value=>{
-                return{
-                    ...value,
+            let value = state.onPlayList.map(item=>{
+                return {
+                    ...item,
                     selected: v
                 }
             });
+            commit(types.SEL_ALL_PLAY_LIST_ITEM,value);
         },
-        delPlayListItem(state,index){
-            state.onPlayList.splice(index,1);
+        delPlayListItem({commit},index){
+            commit(types.DEL_PLAY_LIST_ITEM,index);
+        },
+        delAllPlayListItem({commit,state}){
+            let value = [], index = 0;
+            for(let i=0; i<state.onPlayList.length; i++){
+                if(!state.onPlayList[i].selected){
+                    value[index++] = state.onPlayList[i];
+                }
+            }
+            commit(types.DEL_ALL_PLAY_LIST_ITEM,value);
         }
     }
 }

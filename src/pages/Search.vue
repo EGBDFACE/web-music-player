@@ -1,7 +1,15 @@
 <template>
     <div class="subpage-viewport">
         <div class="search-bar">
-            <input type="text" autocomplete="off" id="searchInput" placeholder="音乐/歌手"  v-model.trim="searchContext" @input="getSearchSuggest($event.target.value)" @keyup.enter='getSearchResult($event.target.value)' @focus='setInputFocus()' @blur='setInputBlur()'/>
+            <input type="text" 
+                autocomplete="off" 
+                id="searchInput" 
+                placeholder="音乐/歌手"  
+                v-model.trim="searchContext" 
+                @input="getSearchSuggest($event.target.value)" 
+                @keyup.enter='getSearchResult($event.target.value)' 
+                @focus='setInputFocus()' 
+                @blur='setInputBlur()'/>
             <div class="js-smartbox" v-if="inputFocus&&((searchHistory.length !=0)||(Object.keys(searchSuggest)).length !=0)" @mouseenter="setSmartBoxFocus()" @mouseleave="setSmartBoxBlur()">
             <!-- <div class="js-smartbox" v-if="inputFocus&&((searchHistory.length != 0)||(Object.keys(searchSuggest)).length != 0)"> -->
                 <div class="search-suggest" v-if="Object.keys(searchSuggest).length !=0">
@@ -36,7 +44,17 @@
                 <span class="hot-search-list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
             </div>
         </div>
-        <SongList :setOnPlayList="setOnPlayList" :songs="state_searchResult" :deleteItem="delSearchResultItem" :selectItem="selSearchResultItem" :selectAll="selAllSearchResultItem" :deleteAll="delAllSearchResultItem" v-if="state_searchResult.length != 0"></SongList>
+        <SongList :modListMenuStyle="activeListMenuStyle" 
+            :headerMenuDelete="activeListMenuStyle" 
+            :setPlayList="setPlayList" 
+            :setPlaySong="setPlaySong"
+            :songs="state_searchResult" 
+            :deleteItem="delSearchResultItem" 
+            :selectItem="selSearchResultItem" 
+            :selectAll="selAllSearchResultItem" 
+            :deleteAll="delAllSearchResultItem" 
+            v-if="state_searchResult.length != 0">
+            </SongList>
     </div>
 </template>
 
@@ -187,13 +205,17 @@ export default {
             this.searchHistory = [];
             // this.inputFocus = true;
         },
-        ...mapMutations([
+        activeListMenuStyle(value){
+            return value.length > 0 ? null : { display: 'none'};
+        },
+        ...mapActions([
             'setSearchResult',
             'delSearchResultItem',
             'selSearchResultItem',
             'selAllSearchResultItem',
             'delAllSearchResultItem',
-            'setOnPlayList'
+            'setPlayList',
+            'setPlaySong'
         ])
     },
     computed: {
