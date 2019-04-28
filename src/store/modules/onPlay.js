@@ -41,20 +41,27 @@ const onPlay = {
                     }
                 }
             }else{
-                if(!state.onPlayList.length){
+                if(state.onPlayList.length === 0){
                     newList.push({
                         ...value,
                         selected: false
                     })
-                }
-                for(let i=0; i<state.onPlayList.length; i++){
-                    if(state.onPlayList[i].id !== value.id){
+                }else{
+                    let existFlag = false;
+                    for(let i=0; i<state.onPlayList.length; i++){
+                        if(state.onPlayList[i].id === value.id){
+                            existFlag = true;
+                            break;
+                        }
+                    }
+                    if(!existFlag){
                         newList.push({
                             ...value,
                             selected: false
                         });
                     }
                 }
+                
             }
             commit(types.SET_PLAY_LIST,newList);
         },

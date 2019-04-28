@@ -17,18 +17,7 @@
                     <SideBar/>
                 </div>
             </div>
-            <div class="player__ft">
-                <i class="btn_big_prev"></i>
-                <i class="btn_big_play"></i>
-                <i class="btn_big_next"></i>
-                <div class="player_music">
-                    <div class="player_music__info">
-                        <span></span>
-                        <span>-</span>
-                        <span></span>
-                    </div>
-                </div>
-            </div>
+            <PlayFt/>
         </div>
     </div>
 </template>
@@ -37,6 +26,7 @@
 
 import TopNav from '@/components/TopNav';
 import SideBar from '@/components/SideBar';
+import PlayFt from '@/components/PlayFt';
 
 export default {
     name: 'HomePage',
@@ -46,8 +36,8 @@ export default {
     //     }
     // },
     components: {
-        TopNav, SideBar
-    },
+        TopNav, SideBar, PlayFt
+    }
     // computed: {
     //     nowRoute: function(){
     //         return this.nowRoute;
@@ -119,58 +109,5 @@ export default {
     opacity: .8;
     min-width: 122px;
     text-align: center;
-}
-.player__ft{
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 11%;
-}
-@mixin btn_big_common{
-    background-image : url('../assets/images/icon_player2X.png');
-    background-size : 132px;
-    cursor: pointer;
-    opacity: .8;
-    &:hover{
-        opacity: 1;
-    }
-}
-.btn_big_prev{
-    @include btn_big_common();
-    position: absolute;
-    top: 4px;
-    left: 0;
-    width: 19px;
-    height: 20px;
-    background-position: 0 -30px;
-}
-.btn_big_play{
-    @include btn_big_common();
-    position: absolute;
-    top: 0;
-    left: 65px;
-    width: 21px;
-    height: 29px;
-    background-position: 0 0;
-}
-.btn_big_next{
-    @include btn_big_common();
-    position: absolute;
-    top: 4px;
-    left: 132px;
-    width: 19px;
-    height: 20px;
-    background-position: 0 -52px;
-}
-.player_mucic{
-    position: relative;
-    margin: 0 448px 0 208px;
-}
-.player_music__info{
-    padding-right: 90px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 </style>

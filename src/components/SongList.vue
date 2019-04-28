@@ -286,7 +286,8 @@ export default {
   white-space: normal
   @include song-list-item-common
 .song-list__item__name__txt
-  width: 399px
+  // width: 399px
+  max-width: 85%
   float: left
   overflow: hidden
   text-overflow: ellipsis
@@ -360,6 +361,8 @@ export default {
       opacity: .5
       &:hover
         opacity: 1
+    .song-list__item__name__txt
+      max-width: 60%
 .list_menu__icon_delete
   position: absolute
   @include list_menu__item
