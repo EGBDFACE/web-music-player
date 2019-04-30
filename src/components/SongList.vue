@@ -199,6 +199,7 @@ export default {
     opacity: 1
 .song-list__overview
   height: 830px
+  // height: 750px
   margin-right: 0
   overflow-x: hidden
   overflow-y: scroll

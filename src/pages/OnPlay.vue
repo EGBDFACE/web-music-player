@@ -1,5 +1,6 @@
 <template>
-    <div class="subpage_viewport">
+    <!-- <div class="subpage_viewport"> -->
+    <div>
         <SongList :deleteAll="delAllPlayListItem"
             :modListMenuStyle="setModListMenuStyle"
             :headerMenuDelete="setModListMenuStyle"
@@ -48,11 +49,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.subpage_viewport{
-    .song_list_overview{
-        height: 910px;
-    }
-}
+// .subpage_viewport{
+//     .song_list_overview{
+//         height: 910px;
+//     }
+// }
 </style>
 
 

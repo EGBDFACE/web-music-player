@@ -44,7 +44,7 @@
                 <span class="hot-search-list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
             </div>
         </div>
-        <SongList :modListMenuStyle="activeListMenuStyle" 
+        <SongList :modListMenuStyle="activeListMenuStyle" style="height: 750px"
             :headerMenuDelete="activeListMenuStyle" 
             :setPlayList="setPlayList" 
             :setPlaySong="setPlaySong"
