@@ -1,6 +1,5 @@
 <template>
 <div class="mod_song_info">
-
 </div>
 </template>
 

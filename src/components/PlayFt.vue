@@ -207,6 +207,35 @@ export default {
 .mod_btn_comment{
     position: absolute;
     top: 3px;
-    
+    right: 237px;
+    width: 24px;
+    height: 24px;
+    background-position: 0 -400px;
+    @include btn_big_common();
+}
+.btn_big_only{
+    top: 3px;
+    right: 137px;
+    width: 74px;
+    height: 26px;
+    background-position: 0 -282px;
+    position: absolute;
+    @include btn_big_common();
+}
+.player_voice{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    padding-top: 13px;
+}
+.btn_big_voice{
+    top: 4px;
+    left: -38px;
+    width: 26px;
+    height: 21px;
+    background-position: 0 -144px;
+    position: absolute;
+    @include btn_big_common();
 }
 </style>
