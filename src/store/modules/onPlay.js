@@ -40,7 +40,7 @@ const onPlay = {
                         });
                     }
                 }
-                commit(types.SET_PLAY_SONG,value[0]);
+                // commit(types.SET_PLAY_SONG,value[0]);
             }else{
                 if(state.onPlayList.length === 0){
                     newList.push({
@@ -62,7 +62,7 @@ const onPlay = {
                         });
                     }
                 }
-                commit(types.SET_PLAY_SONG,value);
+                // commit(types.SET_PLAY_SONG,value);
             }
             commit(types.SET_PLAY_LIST,newList);
         },

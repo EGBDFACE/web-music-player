@@ -1,7 +1,14 @@
 <template>
     <div class="player__ft">
         <i class="btn_big_prev"></i>
-        <i class="btn_big_play"></i>
+        <!-- <i class="btn_big_play"></i> -->
+        <i class="btn_big_play" 
+            v-if='!onPlayFlag'
+            @click='pause(true)'
+            />
+        <i class="btn_big_pause" v-else 
+            @click='pause(false)'
+            />
         <i class="btn_big_next"></i>
         <div class="player_music">
             <div class="player_music__info" v-if="Object.keys(onPlaySong).length != 0">
@@ -43,6 +50,8 @@
 </template>
 
 <script>
+import { mapActions,mapState } from 'vuex';
+
 export default {
     name: 'PlayFt',
     data: function(){
@@ -51,14 +60,25 @@ export default {
         }
     },
     methods: {
+        ...mapActions([
+            'setPlayFlag',
+            'setPlaySong'
+        ]),
+        pause(value){
+            if(this.onPlaySong.id){
+                this.setPlayFlag(value)
+            }
+        }
     },
     computed: {
-        onPlaySong(){
-            return this.$store.state.onPlaySong;
-        },
         time(){
 
         },
+        ...mapState({
+            onPlayFlag: state => state.onPlayFlag,
+            onPlaySong: state => state.onPlaySong,
+            onPlaySongList: state => state.onPlay.onPlayList
+        }),
         duration(){
             let value = this.$store.state.onPlaySong.duration;
             if(value){
@@ -110,6 +130,10 @@ export default {
     width: 21px;
     height: 29px;
     background-position: 0 0;
+}
+.btn_big_pause{
+    @extend .btn_big_play;
+    background-position: -30px 0;
 }
 .btn_big_next{
     @include btn_big_common();

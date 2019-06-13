@@ -10,6 +10,7 @@
             :selectAll="selAllPlayListItem" 
             :selectItem="selPlayListItem"
             :setPlaySong='setPlaySong'
+            :setPlayFlag='setPlayFlag'
             v-if="this.onPlayList.length > 0"
             class="song_list_overview"/>
     </div>
@@ -36,7 +37,8 @@ export default {
             'selAllPlayListItem',
             'delPlayListItem',
             'delAllPlayListItem',
-            'setPlaySong'
+            'setPlaySong',
+            'setPlayFlag'
         ]),
         setModListMenuStyle(value){
             return value.length > 0 ? null : {display : 'none'};

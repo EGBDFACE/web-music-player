@@ -1,5 +1,6 @@
 //root
 export const SET_PLAY_SONG = 'SET_PLAY_SONG';
+export const SET_PLAY_FLAG = 'SET_PLAY_FLAG';
 
 //module search
 export const SET_SEARCH_RESULT = 'SET_SEARCH_RESULT';

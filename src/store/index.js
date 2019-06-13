@@ -14,7 +14,8 @@ const store = new Vuex.Store({
         onPlay: onPlay
     },
     state: {
-        onPlaySong: {}
+        onPlaySong: {},
+        onPlayFlag: false,
     },
     actions,
     mutations

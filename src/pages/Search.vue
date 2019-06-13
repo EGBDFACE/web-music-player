@@ -48,6 +48,7 @@
             :headerMenuDelete="activeListMenuStyle" 
             :setPlayList="setPlayList" 
             :setPlaySong="setPlaySong"
+            :setPlayFlag="setPlayFlag"
             :songs="state_searchResult" 
             :deleteItem="delSearchResultItem" 
             :selectItem="selSearchResultItem" 
@@ -120,44 +121,48 @@ export default {
         },
         getSearchSuggest(value){
             // console.log(value);
-            axios({
-                method: 'get',
-                baseURL: BASE_URL,
-                url: `/search/suggest/?keywords=${value}`
-            }).then(res=>{
-                console.log(res);
-                this.searchSuggest = res.data.result;
-            }).catch(err=>{
-                this.searchSuggest = {};
-                console.error(err.message);
-            })
+            if(value){
+                axios({
+                    method: 'get',
+                    baseURL: BASE_URL,
+                    url: `/search/suggest/?keywords=${value}`
+                }).then(res=>{
+                    console.log(res);
+                    this.searchSuggest = res.data.result;
+                }).catch(err=>{
+                    this.searchSuggest = {};
+                    console.error(err.message);
+                })
+            }
         },
         getSearchResult(value){
-            axios({
-                method: 'get',
-                baseURL: BASE_URL,
-                url: `/search?keywords=${value}`
-            }).then(res=>{
-                console.log(res);
-                this.searchContext = value;
-                this.songs = res.data.result.songs;
-                for(let i=0;i<this.songs.length;i++){
-                    this.songs[i].selected = false;
-                }
-                this.setSearchResult(this.songs);
-                if(this.searchHistory.indexOf(value) === -1){
-                    this.searchHistory.push(value);
-                }
-                // else{
-                //     console.log('history item search');
-                    
-                // }
-                this.inputFocus = false;
-                this.smartBoxFocus = false;
-                document.getElementById('searchInput').blur();
-            }).catch(err=>{
-                console.error(err.message);
-            });
+            if(value){
+                axios({
+                    method: 'get',
+                    baseURL: BASE_URL,
+                    url: `/search?keywords=${value}`
+                }).then(res=>{
+                    console.log(res);
+                    this.searchContext = value;
+                    this.songs = res.data.result.songs;
+                    for(let i=0;i<this.songs.length;i++){
+                        this.songs[i].selected = false;
+                    }
+                    this.setSearchResult(this.songs);
+                    if(this.searchHistory.indexOf(value) === -1){
+                        this.searchHistory.push(value);
+                    }
+                    // else{
+                    //     console.log('history item search');
+                        
+                    // }
+                    this.inputFocus = false;
+                    this.smartBoxFocus = false;
+                    document.getElementById('searchInput').blur();
+                }).catch(err=>{
+                    console.error(err.message);
+                });
+            }
         },
         setInputFocus(){
             // console.log(this);
@@ -215,7 +220,8 @@ export default {
             'selAllSearchResultItem',
             'delAllSearchResultItem',
             'setPlayList',
-            'setPlaySong'
+            'setPlaySong',
+            'setPlayFlag'
         ])
     },
     computed: {

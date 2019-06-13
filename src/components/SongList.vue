@@ -7,14 +7,14 @@
         <li class="song-list__header-name">
           <span>歌曲</span>
           <div class="mod_list_menu" :style="modListMenuStyle(addPlayList)">
-              <i class="list_menu__icon_play" @click="setPlayList(addPlayList)" :style="headerListMenuPlayStyle(addPlayList)"></i>
+              <i class="list_menu__icon_play" @click="setPlay(addPlayList)" :style="headerListMenuPlayStyle(addPlayList)"></i>
               <i class="list_menu__icon_add"></i>
               <i class="list_menu__icon_down"></i>
               <i class="list_menu__icon_share"></i>
             </div>
           </li>
         <li class="song-list__header-author">歌手</li>
-        <li class="song-list__header-time">时长</li>
+        <li class="song-list__header-time" :style="headerTimeStyle">时长</li>
         <i class="list_menu__icon_delete" @click="deleteAll()" :style="headerMenuDelete(addPlayList)"></i>
     </ul>
     <ul class="song-list__list">
@@ -27,7 +27,7 @@
           <div class="song-list__item__name">
             <span class="song-list__item__name__txt">{{item.name}}</span>
             <div class="mod_list_menu">
-              <i class="list_menu__icon_play" @click="setPlaySong(item)"></i>
+              <i class="list_menu__icon_play" @click="setPlay(item)"></i>
               <i class="list_menu__icon_add"></i>
               <i class="list_menu__icon_down"></i>
               <i class="list_menu__icon_share"></i>
@@ -84,6 +84,7 @@ export default {
           return null
         }
       },
+      setPlayFlag: {},
       setPlaySong: {},
       modListMenuStyle: {},
       headerMenuDelete: {},
@@ -95,6 +96,15 @@ export default {
       }
     },
     methods: {
+      setPlay(value){
+        this.setPlayList(value);
+        this.setPlayFlag(true);
+        if(Object.prototype.toString.call(value) === '[object Array]'){
+          this.setPlaySong(value[0]);
+        }else{
+          this.setPlaySong(value);
+        }
+      },
       getSongDuration(value){
         let minute = Math.floor((value/1000)/60);
         let second = Math.floor(value/1000) - minute*60;
@@ -172,6 +182,15 @@ export default {
       },
       onPlaySong(){
         return this.$store.state.onPlaySong;
+      },
+      headerTimeStyle(){
+        if(this.addPlayList.length === 0){
+          return {
+            opacity: 1
+          }
+        }else{
+          return undefined
+        }
       }
       // activeListMenuStyle(){
       //   return this.addPlayList.length > 0 ? null : { display : 'none' };
