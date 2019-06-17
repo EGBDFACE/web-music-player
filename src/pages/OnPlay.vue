@@ -1,6 +1,6 @@
 <template>
     <!-- <div class="subpage_viewport"> -->
-    <div>
+    <div class="subpage-viewport">
         <SongList :deleteAll="delAllPlayListItem"
             :modListMenuStyle="setModListMenuStyle"
             :headerMenuDelete="setModListMenuStyle"
@@ -12,7 +12,7 @@
             :setPlaySong='setPlaySong'
             :setPlayFlag='setPlayFlag'
             v-if="this.onPlayList.length > 0"
-            class="song_list_overview"/>
+            style='height: 100%' />
     </div>
 </template>
 

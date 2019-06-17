@@ -18,7 +18,7 @@
         <i class="list_menu__icon_delete" @click="deleteAll()" :style="headerMenuDelete(addPlayList)"></i>
     </ul>
     <ul class="song-list__list">
-      <li v-for="(item,index) in songs" :key="index">
+      <li v-for="(item,index) in songs" :key="index" :style="listItemStyle(item)">
         <div class="song-list__item">
           <div class="song-list__item__edit sprite" :style="selectedItemLabelStyle(index)">
             <input type="checkbox"  @click="selectItem(index)" />
@@ -145,6 +145,16 @@ export default {
         }else{
           return null
         }
+      },
+      listItemStyle(value){
+        let style = undefined;
+        if(!value.available){
+          style = {
+            pointerEvents: 'none',
+            opacity: '.5'
+          }
+        }
+        return style;
       }
       // setAllItemsSelected(value){
       //   // console.log(value);
@@ -217,8 +227,7 @@ export default {
   &:hover
     opacity: 1
 .song-list__overview
-  height: 830px
-  // height: 750px
+  height: 90%
   margin-right: 0
   overflow-x: hidden
   overflow-y: scroll

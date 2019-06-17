@@ -1,5 +1,10 @@
 <template>
     <div class="player__ft">
+        <audio :src="songUrl"
+            ref="refAudio"
+            preload="none"
+            autoplay
+            />
         <i class="btn_big_prev"></i>
         <!-- <i class="btn_big_play"></i> -->
         <i class="btn_big_play" 
@@ -50,13 +55,64 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { mapActions,mapState } from 'vuex';
+import { BASE_URL } from '@/assets/constant.js';
 
 export default {
     name: 'PlayFt',
     data: function(){
         return {
-            timer: '00:00'
+            timer: '00:00',
+            song: {},
+            songUrl: ''
+        }
+    },
+    mounted(){
+        this.song = this.onPlaySong;
+    },
+    watch:{
+        // song:{
+        //     deep: true,
+        //     handle(val){
+        //         console.log(val);
+        //     }
+        // }
+        onPlaySong(nv, ov){
+            // deep: true,
+            if((nv != ov)&&(nv.id != ov.id)){
+                this.song = nv;
+                axios({
+                    method: 'get',
+                    baseURL: BASE_URL,
+                    url: `/check/music?id=${this.song.id}`
+                }).then( res => {
+                    // if(res.data.)
+                    console.log(res);
+                    axios({
+                        methods: 'get',
+                        baseURL: BASE_URL,
+                        url: `/song/url?id=${this.song.id}`
+                    }).then(res => {
+                        this.songUrl = res.data.data[0].url;
+                        // console.log(this.$refs.refAudio);
+                        // this.$refs.refAudio.play();
+                        // let playPromise = this.$refs.refAudio.play();
+                        // let playPromise = document.getElementsByTagName('audio')[0].play();
+                        // if(playPromise !== undefined){
+                        //     playPromise.then(function(){
+                        //         console.log('play');
+                        //     })
+                        //     .catch(function(error){
+                        //         console.error(error.message);
+                        //     })
+                        // }
+                    })
+                }).catch( error => {
+                    console.log('暂无版权');
+                })
+                
+            }
         }
     },
     methods: {

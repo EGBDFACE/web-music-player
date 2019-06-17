@@ -44,7 +44,7 @@
                 <span class="hot-search-list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
             </div>
         </div>
-        <SongList :modListMenuStyle="activeListMenuStyle" style="height: 750px"
+        <SongList :modListMenuStyle="activeListMenuStyle" 
             :headerMenuDelete="activeListMenuStyle" 
             :setPlayList="setPlayList" 
             :setPlaySong="setPlaySong"
@@ -137,6 +137,7 @@ export default {
         },
         getSearchResult(value){
             if(value){
+                this.songs = [];
                 axios({
                     method: 'get',
                     baseURL: BASE_URL,
@@ -144,11 +145,30 @@ export default {
                 }).then(res=>{
                     console.log(res);
                     this.searchContext = value;
-                    this.songs = res.data.result.songs;
-                    for(let i=0;i<this.songs.length;i++){
-                        this.songs[i].selected = false;
+                    let list= res.data.result.songs;
+                    for(let i=0;i<list.length;i++){
+                        axios({
+                            method: 'get',
+                            baseURL: BASE_URL,
+                            url: `/check/music?id=${list[i].id}`
+                        })
+                        .then( res => {
+                            list[i].selected = false;
+                            list[i].available = true;
+                            if(i === list.length-1){
+                                this.songs = list;
+                                this.setSearchResult(list);
+                            }
+                        })
+                        .catch( err => {
+                            list[i].available = false;
+                            if(i === list.length-1){
+                                this.songs = list;
+                                this.setSearchResult(list);
+                            }
+                            // console.error(list[i].name + '暂无版权');
+                        })
                     }
-                    this.setSearchResult(this.songs);
                     if(this.searchHistory.indexOf(value) === -1){
                         this.searchHistory.push(value);
                     }
@@ -234,7 +254,8 @@ export default {
 <style lang='sass'>
 .search-bar
     position: relative
-    margin-top: 40px
+    // margin-top: 40px
+    height: 10%
     .hot-search-list
         line-height: 40px
         margin-right: 15px

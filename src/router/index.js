@@ -49,25 +49,52 @@ export default new Router({
       // component: HelloWorld
       // redirect:'/root'
       component: HomePage, 
-      children: [{
-        path: 'OnPlayList', 
-        component: Onplay
-      },{
-        path: 'Recommand', 
+      children: [
+        {
+          path: 'onplay', 
+          component: Onplay
+        },
+        {
+        path: 'recommand', 
         component: Recommand
-      },{
-        path: 'Search', 
-        component: Search
-      },{
-        path: 'MyPlayList', 
-        component: MyPlayList
-      },{
-        path: 'MyFootPrint', 
-        component: MyFootprint
-      },{
-        path: 'SearchDetail',
-        component: SearchDetail
-      }]
+        },
+        {
+          path: 'search', 
+          component: Search
+        },
+        // {
+        //   path: 'singer',
+        //   component: Singer
+        // },
+        // {
+        //   path: 'song',
+        //   component: 'Song'
+        // },
+        // {
+        //   path: 'album',
+        //   component: 'Album'
+        // },
+        // {
+        //   path: 'mv',
+        //   component: 'Mv'
+        // },
+        // {
+        //   path: 'playlist',
+        //   component: PlayList
+        // }
+        // {
+        //   path: 'MyPlayList', 
+        //   component: MyPlayList
+        // },
+        // {
+        //   path: 'MyFootPrint', 
+        //   component: MyFootprint
+        // },
+        {
+          path: 'detail',
+          component: SearchDetail
+        }
+      ]
     }
     // {
     //   path: '/root',
