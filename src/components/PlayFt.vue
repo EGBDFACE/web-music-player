@@ -4,17 +4,22 @@
             ref="refAudio"
             preload="none"
             autoplay
+            @ended='next()'
             />
-        <i class="btn_big_prev"></i>
+        <i class="btn_big_prev"
+            @click='previous()'
+            />
         <!-- <i class="btn_big_play"></i> -->
         <i class="btn_big_play" 
             v-if='!onPlayFlag'
-            @click='pause(true)'
+            @click='play()'
             />
         <i class="btn_big_pause" v-else 
-            @click='pause(false)'
+            @click='pause()'
             />
-        <i class="btn_big_next"></i>
+        <i class="btn_big_next"
+            @click='next()'
+            />
         <div class="player_music">
             <div class="player_music__info" v-if="Object.keys(onPlaySong).length != 0">
                 <span class="info__name">{{onPlaySong.name}}</span>
@@ -29,11 +34,18 @@
                 <span> / </span>
                 <span>{{duration}}</span>
             </div>
-            <div class="player_grogress">
+            <div class="player_progress">
                 <div class="player_progress__inner">
-                    <div class="player_progress__load"></div>
-                    <div class="player_progress__play" style="width: 0%">
-                        <i class="player_progress__dot"></i>
+                    <div class="player_progress__load"
+                        id='progress_bar'
+                        @click='handleProgressClick'
+                        />
+                    <div class="player_progress__play" 
+                        :style='progressStyle'
+                        @click='handleProgressClick'>
+                        <i class="player_progress__dot"
+                            @mousedown='handleProgressDrag'
+                            />
                     </div>
                 </div>
             </div>
@@ -43,11 +55,19 @@
         <i class="btn_big_down"></i>
         <div class="mod_btn_comment"></div>
         <i class="btn_big_only"></i>
-        <div class="palyer_progress player_voice">
+        <div class="player_progress player_voice">
             <i class="btn_big_voice"></i>
             <div class="player_progress__inner">
-                <div class="player_progress__play">
-                    <i class="player_progress__dot"></i>
+                <div class="player_progress__load"
+                    id='voice_bar'
+                    @click='handleVoiceClick'
+                    />
+                <div class="player_progress__play"
+                    :style='voiceStyle'
+                    @click='handleVoiceClick'>
+                    <i class="player_progress__dot"
+                        @mousedown='handleVoiceDrag'
+                        />
                 </div>
             </div>
         </div>
@@ -63,13 +83,22 @@ export default {
     name: 'PlayFt',
     data: function(){
         return {
-            timer: '00:00',
+            progressStyle: '',
+            // progressPosPrev: 0,
             song: {},
-            songUrl: ''
+            songUrl: '',
+            timer: '00:00',
+            voiceStyle: 'width: 100%'
         }
     },
     mounted(){
         this.song = this.onPlaySong;
+        // this.$refs.refAudio.onloadedmetadata = function(){
+        //     const eleAudio = document.getElementsByTagName('audio')[0];
+        //     console.log(eleAudio);
+            
+        // }
+        // this.$refs.refAudio.onended = this.next();
     },
     watch:{
         // song:{
@@ -85,33 +114,15 @@ export default {
                 axios({
                     method: 'get',
                     baseURL: BASE_URL,
-                    url: `/check/music?id=${this.song.id}`
-                }).then( res => {
-                    // if(res.data.)
-                    console.log(res);
-                    axios({
-                        methods: 'get',
-                        baseURL: BASE_URL,
-                        url: `/song/url?id=${this.song.id}`
-                    }).then(res => {
-                        this.songUrl = res.data.data[0].url;
-                        // console.log(this.$refs.refAudio);
-                        // this.$refs.refAudio.play();
-                        // let playPromise = this.$refs.refAudio.play();
-                        // let playPromise = document.getElementsByTagName('audio')[0].play();
-                        // if(playPromise !== undefined){
-                        //     playPromise.then(function(){
-                        //         console.log('play');
-                        //     })
-                        //     .catch(function(error){
-                        //         console.error(error.message);
-                        //     })
-                        // }
-                    })
-                }).catch( error => {
-                    console.log('暂无版权');
+                    url: `/song/url?id=${this.song.id}`
                 })
-                
+                .then( res => {
+                    this.songUrl = res.data.data[0].url;
+                    this.setProgress();
+                })
+                .catch( err => {
+                    console.error(err.message);
+                })
             }
         }
     },
@@ -120,9 +131,150 @@ export default {
             'setPlayFlag',
             'setPlaySong'
         ]),
-        pause(value){
+        play(){
             if(this.onPlaySong.id){
-                this.setPlayFlag(value)
+                // this.$refs.refAudio.play();
+                let playPromise = this.$refs.refAudio.play();
+                // console.log(playPromise);
+                if(playPromise !== undefined){
+                    playPromise.then(() => {
+                        this.setPlayFlag(true);
+                    })
+                    .catch(function(error){
+                        console.error(error.message);
+                    })
+                }
+            }
+        },
+        pause(){
+            if(this.onPlaySong.id){
+                this.$refs.refAudio.pause();
+                this.setPlayFlag(false);
+                // let pausePromise = this.$refs.refAudio.pause();
+                // console.log(pausePromise); // undefined
+                // if(pausePromise !== undefined){
+                //     pausePromise.then(() => {
+                //         console.log('pause');
+                //         console.log(this);
+                //         this.setPlayFlag(false);
+                //     })
+                //     .catch(function(error){
+                //         console.error(error.message);
+                //     })
+                // }
+            }
+        },
+        next(){
+            const list = this.onPlaySongList;
+            const song = this.onPlaySong;
+            for(let i=0; i<list.length; i++){
+                if(song.id === list[i].id){
+                    if(list.length === 1){
+                        this.$refs.refAudio.currentTime = 0;
+                        break;
+                    }
+                    if(i === list.length-1){
+                        this.setPlaySong(list[0]);
+                    }else{
+                        this.setPlaySong(list[i+1]);
+                    }
+                    break;
+                }
+            }
+        },
+        previous(){
+            const list = this.onPlaySongList;
+            const song = this.onPlaySong;
+            for(let i=0; i<list.length; i++){
+                if(song.id === list[i].id){
+                    if(list.length === 1){
+                        this.$refs.refAudio.currentTime = 0;
+                        break;
+                    }
+                    if(i === 0){
+                        this.setPlaySong(list[list.length-1]);
+                    }else{
+                        this.setPlaySong(list[i-1]);
+                    }
+                    break;
+                }
+            }
+        },
+        setProgress(){
+            const audio = this.$refs.refAudio;
+            this.timer = '00:00';
+            this.progressStyle = 'width: 0%';
+            setInterval( ()=>{ // 箭头函数完全修复了this的指向，this总是指向词法作用域，也就是外层调用者
+                let newTimer = '';
+                if(audio.currentTime < 60){
+                    this.timer = '00:' + this.convertNumber(Math.floor(audio.currentTime));
+                }else{
+                    this.timer = this.convertNumber(Math.floor(audio.currentTime/60))+':'+this.convertNumber(Math.floor(audio.currentTime%60));
+                }
+                this.progressStyle = 'width:' + (audio.currentTime/audio.duration)*100 + '%';
+            },1000);
+        },
+        convertNumber(value){
+            if(value<10){
+                return '0'+value
+            }else{
+                return value.toString()
+            }
+        },
+        handleProgressClick(e){
+            // console.log(e);
+            const progressPosLeft = document.getElementById('progress_bar').getBoundingClientRect().left;
+            const progressLength = document.getElementById('progress_bar').getBoundingClientRect().width;
+            const clickPosX = e.pageX;
+            const percent = (clickPosX-progressPosLeft)/progressLength;
+            this.$refs.refAudio.currentTime = percent * this.$refs.refAudio.duration;
+            this.progressStyle = 'width:' + percent*100 + '%';
+        },
+        handleProgressDrag(e){
+            // console.log('drag');
+            e.preventDefault();
+            const progressPosLeft = document.getElementById('progress_bar').getBoundingClientRect().left;
+            const progressLength = document.getElementById('progress_bar').getBoundingClientRect().width;
+            // const disx = e.pageX - this.progressPosPrev || 0;
+            // console.log(disx);
+            const _this = this;
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmousedown = null;
+            }
+            document.onmousemove = function(ev){
+                // _this.progressPosPrev = ev.pageX - disx;
+                const pos = ev.pageX - progressPosLeft;
+                // const percent = (_this.progressPosPrev/progressLength);
+                const percent = pos/progressLength;
+                _this.$refs.refAudio.currentTime = percent * _this.$refs.refAudio.duration;
+                _this.progressStyle = 'width:' + percent*100 + '%';
+            }
+        },
+        handleVoiceClick(e){
+            const voicePosLeft = document.getElementById('voice_bar').getBoundingClientRect().left;
+            const voiceLength = document.getElementById('voice_bar').getBoundingClientRect().width;
+            const clickPosX = e.pageX;
+            const percent = (clickPosX-voicePosLeft)/voiceLength;
+            this.$refs.refAudio.volume = percent;
+            this.voiceStyle = 'width:' + percent*100 + '%';
+        },
+        handleVoiceDrag(e){
+            e.preventDefault();
+            const voicePosLeft = document.getElementById('voice_bar').getBoundingClientRect().left;
+            const voiceLength = document.getElementById('voice_bar').getBoundingClientRect().width;
+            const _this = this;
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmousedown = null;
+            }
+            document.onmousemove = function(ev){
+                const pos = ev.pageX - voicePosLeft;
+                const percent = pos/voiceLength;
+                if((percent<=1)&&(percent>=0)){
+                    _this.$refs.refAudio.volume = percent;
+                    _this.voiceStyle = 'width:' + percent*100 + '%';
+                }
             }
         }
     },
@@ -227,7 +379,7 @@ export default {
     top: 0;
     right: 0;
 }
-.player_grogress{
+.player_progress{
     padding-top: 6px;
     height: 8px;
     cursor: pointer;
@@ -242,6 +394,7 @@ export default {
     background: rgba(255,255,255,.2);
 }   
 .player_progress__play{
+    // pointer-events: none;
     position: absolute;
     top: 0;
     height: 2px;

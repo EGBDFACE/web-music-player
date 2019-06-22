@@ -34,10 +34,12 @@ const onPlay = {
                         }
                     }
                     if(!existItemFlag){
-                        newList.push({
-                            ...value[i],
-                            selected: false
-                        });
+                        if(value[i].available){
+                            newList.push({
+                                ...value[i],
+                                selected: false
+                            });
+                        }                        
                     }
                 }
                 // commit(types.SET_PLAY_SONG,value[0]);
