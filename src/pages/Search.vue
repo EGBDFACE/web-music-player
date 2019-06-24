@@ -255,7 +255,7 @@ export default {
 .search-bar
     position: relative
     // margin-top: 40px
-    height: 10%
+    height: 12%
     .hot-search-list
         line-height: 40px
         margin-right: 15px

@@ -227,7 +227,7 @@ export default {
   &:hover
     opacity: 1
 .song-list__overview
-  height: 90%
+  height: 88%
   margin-right: 0
   overflow-x: hidden
   overflow-y: scroll
