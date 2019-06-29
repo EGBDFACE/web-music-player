@@ -6,8 +6,8 @@
         </li>
         <li class="song-list__header-name">
           <span>歌曲</span>
-          <div class="mod_list_menu" :style="modListMenuStyle(addPlayList)">
-              <i class="list_menu__icon_play" @click="setPlay(addPlayList)" :style="headerListMenuPlayStyle(addPlayList)"></i>
+          <div class="mod_list_menu" :style="CModListMenuStyle">
+              <i class="list_menu__icon_play" @click="setPlay(addPlayList)" :style="CHeaderListMenuPlayStyle"></i>
               <i class="list_menu__icon_add"></i>
               <i class="list_menu__icon_down"></i>
               <i class="list_menu__icon_share"></i>
@@ -15,7 +15,7 @@
           </li>
         <li class="song-list__header-author">歌手</li>
         <li class="song-list__header-time" :style="headerTimeStyle">时长</li>
-        <i class="list_menu__icon_delete" @click="deleteAll()" :style="headerMenuDelete(addPlayList)"></i>
+        <i class="list_menu__icon_delete" @click="deleteAll()" :style="CModListMenuStyle"></i>
     </ul>
     <ul class="song-list__list">
       <li v-for="(item,index) in songs" :key="index" :style="listItemStyle(item)">
@@ -23,7 +23,8 @@
           <div class="song-list__item__edit sprite" :style="selectedItemLabelStyle(index)">
             <input type="checkbox"  @click="selectItem(index)" />
           </div>
-          <div class="song-list__item__number">{{index + 1 }}</div>
+          <i class="song-list__item__onplay_icon" v-if='item.id === onPlaySong.id'/>
+          <div class="song-list__item__number" v-else>{{index + 1 }}</div>
           <div class="song-list__item__name">
             <span class="song-list__item__name__txt">{{item.name}}</span>
             <div class="mod_list_menu">
@@ -52,9 +53,10 @@
   </div>  
 </template>
 <script>
+import { mapState } from 'vuex';
  
 export default {
-    name: 'SongsList',
+    name: 'SongList',
     data: function(){
       return {
         selectedItems: [],
@@ -86,8 +88,18 @@ export default {
       },
       setPlayFlag: {},
       setPlaySong: {},
-      modListMenuStyle: {},
-      headerMenuDelete: {},
+      // modListMenuStyle: {
+      //   type: Object,
+      //   default: () => {
+      //     return undefined
+      //   }
+      // },
+      // headerMenuDelete: {
+      //   type: Object,
+      //   default: () => {
+      //     return undefined
+      //   }
+      // },
       headerListMenuPlayStyle:{
         type: Function,
         default: v=>{
@@ -100,7 +112,12 @@ export default {
         this.setPlayList(value);
         this.setPlayFlag(true);
         if(Object.prototype.toString.call(value) === '[object Array]'){
-          this.setPlaySong(value[0]);
+          for(let i=0; i<value.length; i++){
+            if(value[i].available){
+              this.setPlaySong(value[i]);
+              break;
+            }
+          }
         }else{
           this.setPlaySong(value);
         }
@@ -154,6 +171,11 @@ export default {
             opacity: '.5'
           }
         }
+        if((value.id === this.onPlaySong.id)&&(this.onPlayFlag)){
+          style = {
+            color: '#fff'
+          }
+        }
         return style;
       }
       // setAllItemsSelected(value){
@@ -169,6 +191,10 @@ export default {
       // }
     },
     computed: {
+      ...mapState({
+        onPlayFlag: state => state.onPlayFlag,
+        onPlaySong: state => state.onPlaySong
+      }),
       selectAllLabelStyle(){ 
         let select_all_style = {
           backgroundPosition: '-60px -80px',
@@ -190,8 +216,12 @@ export default {
         }
         return selectedItemArray;
       },
-      onPlaySong(){
-        return this.$store.state.onPlaySong;
+      CModListMenuStyle(){
+        if(this.addPlayList.length>0){
+          return undefined
+        }else{
+          return {display: 'none'}
+        }
       },
       headerTimeStyle(){
         if(this.addPlayList.length === 0){
@@ -201,20 +231,14 @@ export default {
         }else{
           return undefined
         }
+      },
+      CHeaderListMenuPlayStyle(){
+        if(this.$route.path === '/onplay'){
+          return { display: 'none'}
+        }else{
+          return undefined
+        }
       }
-      // activeListMenuStyle(){
-      //   return this.addPlayList.length > 0 ? null : { display : 'none' };
-      // }
-      // selectedItemLabelStyle: function(index){
-      //   if((this.songs[index])&&(this.songs[index].selected)){
-      //     return {
-      //       backgroundPosition: '-60px -80px',
-      //       opacity: 1
-      //     }
-      //   }else{
-      //     return null
-      //   }
-      // }
     }
   
 }
@@ -294,6 +318,16 @@ export default {
   // opacity: .8
 .song-list__item__edit
   @extend .song-list__edit
+.song-list__item__onplay_icon
+  position: absolute
+  top: 50%
+  left: 40px
+  margin-top: -5px
+  width: 10px
+  height: 10px
+  background: url('../assets/images/wave.gif')
+  background-repeat: no-repeat
+  overflow: hidden
 .song-list__item__number
   left: 16px
   color: inherit

@@ -2,9 +2,6 @@
     <!-- <div class="subpage_viewport"> -->
     <div class="subpage-viewport">
         <SongList :deleteAll="delAllPlayListItem"
-            :modListMenuStyle="setModListMenuStyle"
-            :headerMenuDelete="setModListMenuStyle"
-            :headerListMenuPlayStyle="setHeaderListMenuPlayStyle" 
             :deleteItem="delPlayListItem" 
             :songs="onPlayList" 
             :selectAll="selAllPlayListItem" 
@@ -39,13 +36,7 @@ export default {
             'delAllPlayListItem',
             'setPlaySong',
             'setPlayFlag'
-        ]),
-        setModListMenuStyle(value){
-            return value.length > 0 ? null : {display : 'none'};
-        },
-        setHeaderListMenuPlayStyle(value){
-            return {display: 'none'};
-         }
+        ])
     }
 }
 </script>

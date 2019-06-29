@@ -76,7 +76,7 @@
 
 <script>
 // import axios from 'axios';
-import { getSongAudio } from '@/api';
+import { fetchSongAudio } from '@/api';
 import { mapActions,mapState } from 'vuex';
 // import { BASE_URL } from '@/assets/constant.js';
 
@@ -117,7 +117,7 @@ export default {
                 //     baseURL: BASE_URL,
                 //     url: `/song/url?id=${this.song.id}`
                 // })
-                getSongAudio(nv.id)
+                fetchSongAudio(nv.id)
                 .then( res => {
                     this.songUrl = res.data.data[0].url;
                     this.setProgress();

@@ -23,10 +23,13 @@
             <span class="info_clickable">{{onPlaySong.album.name}}</span>
         </div>
     </div>
-    <div class="song_info__lyric" v-if='onPlaySong.id'>
+    <div class="song_info__lyric" 
+        v-if='onPlaySong.id'>
         <!-- <div class="song_info__lyric_box"> -->
             <div class="song_info__lyric_inner"
-                :style='lyricInnerStyle'>
+                :style='lyricInnerStyle'
+                @mousedown='handleLyricDrag'
+                id='lyric-inner'>
                 <p v-for='(item,index) in songLyric'
                     :key='index'
                     :style='setLyricItemStyle(index)'
@@ -39,7 +42,7 @@
 </template>
 
 <script>
-import { getSongDetail, getSongLyric } from '@/api';
+import { fetchSongDetail, fetchSongLyric } from '@/api';
 import { mapActions, mapState } from 'vuex';
 
 export default {
@@ -51,27 +54,45 @@ export default {
             songLyricTran: [],
             // lyricInnerStyle: '',
             // lyricItemStyle: undefined,
-            lyricItemIndex: -1
+            lyricItemIndex: -1,
+            lyricDragPosY: 0
         }
     },
     watch:{
         onPlaySong(nv, ov){
             if((nv != ov)&&(nv.id != ov.id)){
                 // document.getElementById('song-pic').src = '';
-                getSongDetail(nv.id)
+                fetchSongDetail(nv.id)
                 .then( res => {
                     this.songPicSrc = res.data.songs[0].al.picUrl+'?param=300y300';
                 })
                 .catch( err => {
                     console.error(err.message);
                 })
-                getSongLyric(nv.id)
+                fetchSongLyric(nv.id)
                 .then( res => {
                     console.log(res);
                     if(!res.data.nolyric){
-                        this.songLyric = res.data.lrc.lyric.split('\n');
-                        this.songLyricTran = res.data.tlyric.lyric ? res.data.tlyric.lyric.split('\n') : [];
+                        const songLyricRes = res.data.lrc.lyric.split('\n');
+                        const songLyricTranRes = res.data.tlyric.lyric ? res.data.tlyric.lyric.split('\n') : [];
+                        let newSongLyricArray = [], newSongLyricTranArray = [];
+                        let index = 0, indexTran = 0;
+                        for(let i=0; i<songLyricRes.length; i++){
+                            if((!songLyricRes[i].endsWith(']'))&&(songLyricRes[i].startsWith('['))){
+                                newSongLyricArray[index++] = songLyricRes[i];
+                            }
+                        }
+                        for(let i=0; i<songLyricTranRes.length; i++){
+                            if((!songLyricTranRes[i].endsWith(']'))&&(songLyricTranRes[i].startsWith('['))){
+                                newSongLyricTranArray[indexTran++] = songLyricTranRes[i];
+                            }
+                        }
+                        this.songLyric = newSongLyricArray;
+                        this.songLyricTran = newSongLyricTranArray;
                         this.setLyricStyle();
+                    }else{
+                        this.songLyric = [];
+                        this.songLyricTran = [];
                     }
                     // console.log(this.songLyric);
                     // console.log(this.songLyricTran);
@@ -89,7 +110,7 @@ export default {
             onPlaySongList: state => state.onPlay.onPlayList
         }),
         lyricInnerStyle(){
-            let lyricTransformTop = -this.lyricItemIndex*20 - ((this.lyricItemIndex*1.1>8)?8:this.lyricItemIndex*1.1);
+            let lyricTransformTop = -this.lyricItemIndex*28;
             return `transform: translateY(${lyricTransformTop}px)`;
         }
     },
@@ -98,6 +119,7 @@ export default {
             while((value.indexOf('[')!==-1)||(value.indexOf(']')!==-1)){
                 value = value.slice(value.indexOf(']')+1);
             }
+            while(value.indexOf())
             return value;
         },
         setLyricStyle(){
@@ -111,6 +133,8 @@ export default {
                     let lyricTime = lyricMinute*60+lyricSecond;
                     if((audio.currentTime>=lyricTime)&&(audio.currentTime-1<=lyricTime)){
                         this.lyricItemIndex = i;
+                        document.getElementById('lyric-inner').style.top = '120px';
+                        this.lyricDragPosY = 0;
                         // lyricTransformTop = -i*20;
                         break;
                     }
@@ -123,6 +147,22 @@ export default {
                 return 'color: #31c27c'
             }else{
                 return undefined
+            }
+        },
+        handleLyricDrag(e){
+            e.preventDefault();
+            const disy = e.pageY - this.lyricDragPosY;
+            const _this = this;
+            // const lyricTop = document.getElementById('lyric-inner').getBoundingClientRect().top;
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmousedown = null;
+            }
+            document.onmousemove = function(ev){
+                _this.lyricDragPosY = ev.pageY - disy;
+                document.getElementById('lyric-inner').style.top = 120+_this.lyricDragPosY+'px';
+                // console.log(lyricTop);
+                // console.log(ev.pageY);
             }
         }
     }
@@ -192,13 +232,31 @@ export default {
     width: 100%;
     height: 45%;
     overflow: hidden;
+    cursor: grab;
     // overflow-x: hidden;
     // overflow-y: auto;
+    mask-image: linear-gradient(to bottom,
+    rgba(255,255,255,0) 0,
+    rgba(255,255,255,.6) 15%,
+    rgba(255,255,255,1) 25%,
+    rgba(255,255,255,1) 75%,
+    rgba(255,255,255,.6) 85%,
+    rgba(255,255,255,0) 100%);    
+    -webkit-mask-image: linear-gradient(to bottom,
+    rgba(255,255,255,0) 0,
+    rgba(255,255,255,.6) 15%,
+    rgba(255,255,255,1) 25%,
+    rgba(255,255,255,1) 75%,
+    rgba(255,255,255,.6) 85%,
+    rgba(255,255,255,0) 100%);
 }
 .song_info__lyric_inner{
     transition: -webkit-transform 0.1s ease-out 0s;
     position: relative;
-    top: 20px;
+    // top: 60px;
+    // top: 150px;
+    top: 120px;
+    cursor: grab;
     p{
         margin: 5px auto;
     }

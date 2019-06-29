@@ -1,5 +1,6 @@
 <template>
     <div class="subpage-viewport">
+        <p>detail</p>
     </div>
 </template>
 

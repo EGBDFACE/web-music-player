@@ -18,7 +18,9 @@
                             <i></i>{{searchSuggestTitle[item]}}
                         </h4>
                         <div class="list">
-                            <div v-for="(subItem,subIndex) in searchSuggest[item]" :key='subIndex'>
+                            <div v-for="(subItem,subIndex) in searchSuggest[item]" 
+                                :key='subIndex'
+                                @click='resolveSearchSuggest(item,subItem)'>
                                 <span class="search-suggest-first">{{subItem.name}}</span>
                                 <span v-if="(item === 'songs')" class="search-suggest-second">—{{getSearchSuggestArtists(subItem.artists)}}</span>
                                 <span v-if="(item === 'mvs')" class="search-suggest-second">—{{getSearchSuggestArtists(subItem.artists)}}</span>
@@ -44,9 +46,7 @@
                 <span class="hot-search-list" v-for="(item,index) in hots" :key="index" @click='getSearchResult(item)'>{{item}}</span>
             </div>
         </div>
-        <SongList :modListMenuStyle="activeListMenuStyle" 
-            :headerMenuDelete="activeListMenuStyle" 
-            :setPlayList="setPlayList" 
+        <SongList :setPlayList="setPlayList" 
             :setPlaySong="setPlaySong"
             :setPlayFlag="setPlayFlag"
             :songs="state_searchResult" 
@@ -54,16 +54,26 @@
             :selectItem="selSearchResultItem" 
             :selectAll="selAllSearchResultItem" 
             :deleteAll="delAllSearchResultItem" 
-            v-if="state_searchResult.length != 0">
-            </SongList>
+            v-if="state_searchResult.length != 0" 
+            />
+        <div class="search-artist_viewport"
+            v-else-if="artistDetail.info.id">
+            <ArtistDetail 
+                />
+        </div>
     </div>
 </template>
 
 <script>
 import { mapActions,mapState,mapGetters, mapMutations } from 'vuex';
+import { fetchCheckMusic, fetchSearchHot, fetchSearchResult, 
+    fetchSearchSuggest, fetchArtistSongs, fetchArtistMvs,
+    fetchArtistAlbums, fetchArtistDesc, fetchPlaylistDetail,
+    fetchAlbumDetail, fetchMvDetail } from '@/api';
 import store from '@/store';
-import axios from 'axios';
+// import axios from 'axios';
 import { BASE_URL } from '@/assets/constant.js';
+import ArtistDetail from '@/components/ArtistDetail.vue';
 import SongList from '@/components/SongList.vue';
 
 export default {
@@ -88,14 +98,12 @@ export default {
         }
     },
     components: {
+        ArtistDetail,
         SongList
     },
     created(){
-        axios({
-            method: 'get',
-            baseURL: BASE_URL,
-            url: '/search/hot'
-        }).then(res=>{
+        fetchSearchHot()
+        .then(res=>{
             // console.log(res);
             let hotsCache = [];
             for(let i=0;i<5;i++){
@@ -103,11 +111,95 @@ export default {
                 hotsCache[i] = res.data.result.hots[i].first;
             }
             this.hots = hotsCache;
-        }).catch(err=>{
+        })
+        .catch(err=>{
             console.error(err.message);
         });
     },
     methods:{
+        resolveSearchSuggest(type,value){
+            switch(type){
+                case 'songs':
+                    fetchCheckMusic(value.id)
+                    .then( res => {
+                        value.available = true;
+                        this.setPlayList(value);
+                        this.setPlaySong(value);
+                        this.setPlayFlag(true);
+                    })
+                    .catch( err => {
+                        console.error(err.message);
+                    })
+                    break;
+                case 'artists':
+                    fetchArtistDesc(value.id)
+                    .then( res => {
+                        this.setArtistDesc(res.data);
+                        // console.log(res);
+                    })
+                    .catch( err => {
+                        console.error(err.message);
+                    })
+                    fetchArtistSongs(value.id)
+                    .then( res => {
+                        this.setArtistInfo(res.data.artist);
+                        this.setArtistSongs(res.data);
+                        // console.log(res);
+                    })
+                    .catch( err => {
+                        console.error(err.message);
+                    })
+                    fetchArtistAlbums(value.id)
+                    .then( res => {
+                        this.setArtistAlbums(res.data);
+                        // console.log(res);
+                    })
+                    .catch( err => {
+                        console.error(err.message);
+                    })
+                    fetchArtistMvs(value.id)
+                    .then( res => {
+                        this.setArtistMvs(res.data);
+                        // console.log(res);
+                    })
+                    .catch( err => {
+                        console.error(err.message);
+                    })
+                    this.$router.push('/search/artist');
+                    break;
+                case 'albums':
+                    fetchAlbumDetail(value.id)
+                    .then( res => {
+                        console.log(res);
+                    })
+                    .catch( err => {
+                        console.error(err.message);
+                    })
+                    break;
+                case 'mvs':
+                    fetchMvDetail(value.id)
+                    .then( res => {
+                        console.log(res);
+                    })
+                    .catch( err => {
+                        console.error(err.message);
+                    })
+                    break;
+                case 'playlists':
+                    fetchPlaylistDetail(value.id)
+                    .then( res => {
+                        console.log(res);
+                    })
+                    .catch( err => {
+                        console.error(err.message);
+                    })
+                    break;
+            }
+            // console.log(this);
+            // this.inputFocus = false;
+            // this.$router.push('/detail');
+            // this.inputFocus = false;
+        },
         setSearchSuggestClass(value){
             return `search-suggest-${value}`;
         },
@@ -122,14 +214,12 @@ export default {
         getSearchSuggest(value){
             // console.log(value);
             if(value){
-                axios({
-                    method: 'get',
-                    baseURL: BASE_URL,
-                    url: `/search/suggest/?keywords=${value}`
-                }).then(res=>{
-                    console.log(res);
+                fetchSearchSuggest(value)
+                .then(res=>{
+                    // console.log(res);
                     this.searchSuggest = res.data.result;
-                }).catch(err=>{
+                })
+                .catch(err=>{
                     this.searchSuggest = {};
                     console.error(err.message);
                 })
@@ -138,21 +228,14 @@ export default {
         getSearchResult(value){
             if(value){
                 this.songs = [];
-                axios({
-                    method: 'get',
-                    baseURL: BASE_URL,
-                    url: `/search?keywords=${value}`
-                }).then(res=>{
+                fetchSearchResult(value)
+                .then(res=>{
                     console.log(res);
                     this.searchContext = value;
                     let list= res.data.result.songs;
                     for(let i=0;i<list.length;i++){
-                        axios({
-                            method: 'get',
-                            baseURL: BASE_URL,
-                            url: `/check/music?id=${list[i].id}`
-                        })
-                        .then( res => {
+                        fetchCheckMusic(list[i].id)
+                        .then( (res) => {
                             list[i].selected = false;
                             list[i].available = true;
                             if(i === list.length-1){
@@ -199,20 +282,20 @@ export default {
             //         that.inputFocus = false;
             //     },1000);
             // })(this);
-            console.log('input blur');
-            console.log(this.smartBoxFocus);
+            // console.log('input blur');
+            // console.log(this.smartBoxFocus);
             if(!this.smartBoxFocus){
                 this.inputFocus = false;
-            }else{
+            }else if(document.getElementById('searchInput')){
                 document.getElementById('searchInput').focus();
             }
         },
         setSmartBoxFocus(){
-            console.log('mouse enter');
+            // console.log('mouse enter');
             this.smartBoxFocus = true;
         },
         setSmartBoxBlur(){
-            console.log('mouse leave');
+            // console.log('mouse leave');
             this.smartBoxFocus = false;
         },
         delSearchHistoryItem(value){
@@ -234,20 +317,29 @@ export default {
             return value.length > 0 ? null : { display: 'none'};
         },
         ...mapActions([
-            'setSearchResult',
-            'delSearchResultItem',
-            'selSearchResultItem',
-            'selAllSearchResultItem',
             'delAllSearchResultItem',
+            'delSearchResultItem',
+            'selAllSearchResultItem',
+            'setArtistAlbums',
+            'setArtistDesc',
+            'setArtistInfo',
+            'setArtistMvs',
+            'setArtistSongs',
             'setPlayList',
             'setPlaySong',
-            'setPlayFlag'
+            'setPlayFlag',
+            'setSearchResult',
+            'selSearchResultItem',
         ])
     },
     computed: {
-        state_searchResult(){
-            return this.$store.state.search.searchResult;
-        }
+        // state_searchResult(){
+        //     return this.$store.state.search.searchResult;
+        // },
+        ...mapState({
+            artistDetail: state => state.search.artist,
+            state_searchResult: state => state.search.searchResult
+        })
     }
 }
 </script>
@@ -393,4 +485,8 @@ export default {
             .icon-history-item-delete
                 margin-top: -6px
                 background-image: none
+.search-artist_viewport
+    width: 100%
+    height: 80%
 </style>
+``
