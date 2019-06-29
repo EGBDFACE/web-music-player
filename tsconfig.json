@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        // "module": "commonjs",
+        "module": "esnext",
+        "target": "es6",
+        "lib": ["es2015","es2017","dom"],
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react",
+        "allowJs": true,
+        "moduleResolution": "node",
+        "baseUrl": ".",
+        "paths": {
+            "Constant": [
+                "src/constant/*"
+            ]
+        }
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}
