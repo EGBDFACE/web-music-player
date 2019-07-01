@@ -5,6 +5,7 @@ import actions from './actions';
 
 import detail from './modules/detail';
 import onPlay from './modules/onPlay';
+import recommand from './modules/recommand';
 import search from './modules/search';
 
 import mutations from './mutations';
@@ -14,6 +15,7 @@ const store = new Vuex.Store({
     modules: {
         // detail: detail,
         onPlay: onPlay,
+        recommand: recommand,
         search: search
     },
     state: {

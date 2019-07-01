@@ -10,10 +10,17 @@
                 @keyup.enter='getSearchResult($event.target.value)' 
                 @focus='setInputFocus()' 
                 @blur='setInputBlur()'/>
-            <div class="js-smartbox" v-if="inputFocus&&((searchHistory.length !=0)||(Object.keys(searchSuggest)).length !=0)" @mouseenter="setSmartBoxFocus()" @mouseleave="setSmartBoxBlur()">
+            <div class="js-smartbox" 
+                v-if="inputFocus&&((searchHistory.length !=0)
+                    ||(Object.keys(searchSuggest)).length !=0)" 
+                @mouseenter="setSmartBoxFocus()" 
+                @mouseleave="setSmartBoxBlur()">
             <!-- <div class="js-smartbox" v-if="inputFocus&&((searchHistory.length != 0)||(Object.keys(searchSuggest)).length != 0)"> -->
-                <div class="search-suggest" v-if="Object.keys(searchSuggest).length !=0">
-                    <div v-for="(item,index) in searchSuggest.order" :key="index" :class="setSearchSuggestClass(item)">
+                <div class="search-suggest" 
+                    v-if="Object.keys(searchSuggest).length !=0">
+                    <div v-for="(item,index) in searchSuggest.order" 
+                        :key="index" 
+                        :class="setSearchSuggestClass(item)">
                         <h4>
                             <i></i>{{searchSuggestTitle[item]}}
                         </h4>
@@ -29,7 +36,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="search-history" v-else-if="searchHistory.length !=0">
+                <div class="search-history" 
+                    v-else-if="searchHistory.length !=0">
                 <!-- <div class="search-history" v-else-if="searchHistory.length != 0" @mouseenter="set"> -->
                     <div class="search-history-title">
                         <p>搜索历史</p>
@@ -56,11 +64,6 @@
             :deleteAll="delAllSearchResultItem" 
             v-if="state_searchResult.length != 0" 
             />
-        <div class="search-artist_viewport"
-            v-else-if="artistDetail.info.id">
-            <ArtistDetail 
-                />
-        </div>
     </div>
 </template>
 
@@ -75,6 +78,7 @@ import store from '@/store';
 import { BASE_URL } from '@/assets/constant.js';
 import ArtistDetail from '@/components/ArtistDetail.vue';
 import SongList from '@/components/SongList.vue';
+import { createHotSongList } from '@/utils/song';
 
 export default {
     name: 'search',
@@ -132,63 +136,62 @@ export default {
                     })
                     break;
                 case 'artists':
-                    fetchArtistDesc(value.id)
-                    .then( res => {
-                        this.setArtistDesc(res.data);
-                        // console.log(res);
-                    })
-                    .catch( err => {
-                        console.error(err.message);
-                    })
                     fetchArtistSongs(value.id)
                     .then( res => {
-                        this.setArtistInfo(res.data.artist);
-                        this.setArtistSongs(res.data);
-                        // console.log(res);
+                        // this.setArtistInfo(res.data.artist);
+                        // this.setArtistSongs(res.data);
+                        console.log(res);
+                        createHotSongList(res.data.hotSongs)
+                        .then( result => {
+                            console.log(result);
+                            this.setSearchResult(result);
+                        })
+                        .catch( err => {
+                            console.error(err.message);
+                        })
                     })
                     .catch( err => {
                         console.error(err.message);
                     })
-                    fetchArtistAlbums(value.id)
-                    .then( res => {
-                        this.setArtistAlbums(res.data);
-                        // console.log(res);
-                    })
-                    .catch( err => {
-                        console.error(err.message);
-                    })
-                    fetchArtistMvs(value.id)
-                    .then( res => {
-                        this.setArtistMvs(res.data);
-                        // console.log(res);
-                    })
-                    .catch( err => {
-                        console.error(err.message);
-                    })
-                    this.$router.push('/search/artist');
                     break;
                 case 'albums':
                     fetchAlbumDetail(value.id)
                     .then( res => {
                         console.log(res);
+                        createHotSongList(res.data.songs)
+                        .then( result => {
+                            console.log(result);
+                            this.setSearchResult(result);
+                        })
+                        .catch( err => {
+                            console.error(err.message);
+                        })
                     })
                     .catch( err => {
                         console.error(err.message);
                     })
                     break;
-                case 'mvs':
-                    fetchMvDetail(value.id)
-                    .then( res => {
-                        console.log(res);
-                    })
-                    .catch( err => {
-                        console.error(err.message);
-                    })
-                    break;
+                // case 'mvs':
+                //     fetchMvDetail(value.id)
+                //     .then( res => {
+                //         console.log(res);
+                //     })
+                //     .catch( err => {
+                //         console.error(err.message);
+                //     })
+                //     break;
                 case 'playlists':
                     fetchPlaylistDetail(value.id)
                     .then( res => {
                         console.log(res);
+                        createHotSongList(res.data.playlist.tracks)
+                        .then( result => {
+                            console.log(result);
+                            this.setSearchResult(result);
+                        })
+                        .catch( err => {
+                            console.error(err.message);
+                        })
                     })
                     .catch( err => {
                         console.error(err.message);
@@ -196,7 +199,9 @@ export default {
                     break;
             }
             // console.log(this);
-            // this.inputFocus = false;
+            this.inputFocus = false;
+            this.smartBoxFocus = false;
+            // this.setInputBlur();
             // this.$router.push('/detail');
             // this.inputFocus = false;
         },
@@ -216,8 +221,15 @@ export default {
             if(value){
                 fetchSearchSuggest(value)
                 .then(res=>{
-                    // console.log(res);
-                    this.searchSuggest = res.data.result;
+                    console.log(res);
+                    const result = res.data.result;
+                    for(let i=0; i<result.order.length; i++){
+                        if(result.order[i] === 'mvs'){
+                            result.order.splice(i,i+1);
+                            break;
+                        }
+                    }
+                    this.searchSuggest = result;
                 })
                 .catch(err=>{
                     this.searchSuggest = {};

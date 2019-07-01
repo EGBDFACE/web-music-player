@@ -63,7 +63,7 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import SongList from '@/components/SongList.vue';
-import { createHotSongList } from '@/utils';
+import { createHotSongList } from '@/utils/song';
 
 export default {
     name: 'ArtistDetail',

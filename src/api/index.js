@@ -102,3 +102,33 @@ export function fetchMvDetail(mvId){
         url: `/mv/detail?mvid=${mvId}`
     })
 }
+
+// recommand 
+export function fetchLeaderBoard(idx){
+    return axios({
+        method: 'get',
+        baseURL: BASE_URL,
+        url: `/top/list?idx=${idx}`
+    })
+}
+export function fetchHighQualityPlaylist(){
+    return axios({
+        method: 'get',
+        baseURL: BASE_URL,
+        url: '/top/playlist/highquality'
+    })
+}
+export function fetchRecommandPlaylist(){
+    return axios({
+        method: 'get',
+        baseURL: BASE_URL,
+        url: '/personalized'
+    })
+}
+export function fetchTopPlaylist(){
+    return axios({
+        method: 'get',
+        baseURL: BASE_URL,
+        url: '/top/playlist'
+    })
+}

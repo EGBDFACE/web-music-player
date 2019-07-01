@@ -71,7 +71,7 @@ export default {
                 })
                 fetchSongLyric(nv.id)
                 .then( res => {
-                    console.log(res);
+                    // console.log(res);
                     if(!res.data.nolyric){
                         const songLyricRes = res.data.lrc.lyric.split('\n');
                         const songLyricTranRes = res.data.tlyric.lyric ? res.data.tlyric.lyric.split('\n') : [];
