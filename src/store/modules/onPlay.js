@@ -42,6 +42,9 @@ const onPlay = {
                         }                        
                     }
                 }
+                if(value.length === 0){
+                    newList = [];
+                }
                 // commit(types.SET_PLAY_SONG,value[0]);
             }else{
                 if(state.onPlayList.length === 0){
@@ -66,6 +69,7 @@ const onPlay = {
                 }
                 // commit(types.SET_PLAY_SONG,value);
             }
+            console.log(newList);
             commit(types.SET_PLAY_LIST,newList);
         },
         selPlayListItem({commit,state},index){

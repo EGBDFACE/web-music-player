@@ -1,13 +1,9 @@
 <template>
     <!-- <div class="subpage_viewport"> -->
     <div class="subpage-viewport">
-        <SongList :deleteAll="delAllPlayListItem"
-            :deleteItem="delPlayListItem" 
+        <SongList 
             :songs="onPlayList" 
-            :selectAll="selAllPlayListItem" 
-            :selectItem="selPlayListItem"
-            :setPlaySong='setPlaySong'
-            :setPlayFlag='setPlayFlag'
+            :setList="setPlayList"
             v-if="this.onPlayList.length > 0"
             style='height: 100%' />
     </div>
@@ -34,6 +30,7 @@ export default {
             'selAllPlayListItem',
             'delPlayListItem',
             'delAllPlayListItem',
+            'setPlayList',
             'setPlaySong',
             'setPlayFlag'
         ])

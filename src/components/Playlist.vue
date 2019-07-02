@@ -8,12 +8,15 @@
                 <div class="item-pic_box">
                     <div class="item-pic">
                         <img :src="item.picUrl"
-                            class="item-pic_src" />
+                            class="item-pic_src"
+                            @click="MSetPlaylistSongs(item)" />
                         <i class="item-pic_mask" />
-                        <i class="item-pic_play-icon" />
+                        <i class="item-pic_play-icon" 
+                            @click="MSetPlaylist(item)" />
                     </div>
                 </div>                
-                <h4 class="play_item-name">{{item.name}}</h4>
+                <h4 class="play_item-name"
+                    @click="MSetPlaylistSongs(item)">{{item.name}}</h4>
                 <div class="play_item-play_count">{{MPlayCount(item.playCount)}}</div>
             </div>
        </div> 
@@ -21,6 +24,10 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+import { fetchCheckMusic, fetchPlaylistDetail } from '@/api';
+import { createHotSongList } from '@/utils/song';
+
 export default {
     name: 'Playlist',
     props: {
@@ -35,9 +42,16 @@ export default {
             default: () => {
                 return []
             }
-        }
+        },
     },
     methods: {
+        ...mapActions([
+            'setPlayFlag',
+            'setPlayList',
+            'setPlaylistSongs',
+            'setPlaySong',
+            'setShowPlaylistSongsFlag'
+        ]),
         MPlayCount(value){
             // return value;
             if(value<10000){
@@ -45,6 +59,38 @@ export default {
             }else{
                 return '播放量：'+(value/10000).toFixed(1)+'万';
             }
+        },
+        MSetPlaylistSongs(value){
+            // console.log(value);
+            if(this.playlistName === "排行榜"){
+                createHotSongList(value.songs)
+                .then( result => {
+                    // console.log(result);
+                    this.setPlaylistSongs(result);
+                })
+                .catch( err => {
+                    console.error(err.message);
+                })
+            }else{
+                fetchPlaylistDetail(value.id)
+                .then( res => {
+                    // console.log(res);
+                    createHotSongList(res.data.playlist.tracks)
+                    .then( result => {
+                        // console.log(result);
+                        this.setPlaylistSongs(result);
+                    })
+                    .catch( err => {
+                        console.error(err.message);
+                    })
+                })
+                .catch( err => {
+                    console.error(err.message);
+                })
+            }
+        },
+        MSetPlaylist(value){
+            console.log(value);
         }
     }
 }
@@ -82,7 +128,7 @@ export default {
     &:hover{
         .item-pic_src{
             transform: scale(1.07) translateZ(0);
-            transition: transform .95s cubic-bezier(0,1,.75,1);
+            transition: transform .75s cubic-bezier(0,1,.75,1);
         }
         .item-pic_mask{
             opacity: .2;
@@ -95,6 +141,8 @@ export default {
 .item-pic_src{
     width: 100%;
     height: 100%;
+    transform: scale(1) translateZ(0);
+    transition: transform .75s;
 }
 .item-pic_mask{
     position: absolute;
@@ -105,6 +153,7 @@ export default {
     background-color: #000;
     opacity: 0;
     transition: opacity .5s;
+    pointer-events: none;
 }
 .item-pic_play-icon{
     position: absolute;
@@ -119,7 +168,7 @@ export default {
     opacity: 0;
     transform: scale(.7) translateZ(0);
     transition-property: opacity,transform;
-    transition-duration: .8s;
+    transition-duration: .5s;
     zoom: 1;
     background-image: url('../assets/images/play_icon.png');
     background-repeat: no-repeat;

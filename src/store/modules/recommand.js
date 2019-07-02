@@ -9,7 +9,9 @@ const recommand = {
         // 推荐歌单
         recommandPlaylist: [],
         // 网友精选碟
-        topPlaylist: []
+        topPlaylist: [],
+        // showPlaylistSongsFlag: false,
+        playlistSongs: []
     },
     mutations: {
         [types.SET_LEADERBOARD](state,value){
@@ -23,7 +25,25 @@ const recommand = {
         },
         [types.SET_TOP_PLAYLIST](state,value){
             state.topPlaylist = value;
-        }
+        },
+        [types.SET_PLAYLIST_SONGS](state,value){
+            state.playlistSongs = value;
+        },
+        // [types.DEL_RECOMMAND_ALL_PLAYLIST_ITEM](state,value){
+        //     state.playlistSongs = value;
+        // },
+        // [types.DEL_RECOMMAND_PLAYLIST_ITEM](state,value){
+        //     state.playlistSongs = value;
+        // },
+        // [types.SEL_RECOMMAND_ALL_PLAYLIST_ITEM](state,value){
+        //     state.playlistSongs = value;
+        // },
+        // [types.SEL_RECOMMAND_PLAYLIST_ITEM](state,value){
+        //     state.playlistSongs = value;
+        // }
+        // [types.SET_SHOW_PLAYLIST_SONGS_FLAG](state,value){
+        //     state.showPlaylistSongsFlag = value;
+        // }
     },
     actions: {
         setLeaderBoard({commit,state},value){
@@ -49,7 +69,27 @@ const recommand = {
         },
         setTopPlaylist({commit},value){
             commit(types.SET_TOP_PLAYLIST,value);
-        }
+        },
+        setPlaylistSongs({commit},value){
+            console.log(value);
+            commit(types.SET_PLAYLIST_SONGS,value);
+        },
+        // delRecommandAllPlaylistItem(){
+
+        // },
+        // delRecommandPlaylistItem(){
+
+        // },
+        // selRecommandAllPlaylistItem(){
+
+        // },
+        // selRecommandPlaylistItem(){
+
+        // }
+        // setShowPlaylistSongsFlag({commit},value){
+        //     commit(types.SET_SHOW_PLAYLIST_SONGS_FLAG,value);
+        // }
+
     }
 }
 

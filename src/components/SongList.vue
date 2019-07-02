@@ -2,7 +2,7 @@
   <div class="song-list__overview">
     <ul class="song-list__header">
         <li class="song-list__edit sprite" :style="selectAllLabelStyle">
-          <input type="checkbox" @click="selectAll()" />
+          <input type="checkbox" @click="MSelectAll($event)" />
         </li>
         <li class="song-list__header-name">
           <span>歌曲</span>
@@ -15,13 +15,13 @@
           </li>
         <li class="song-list__header-author">歌手</li>
         <li class="song-list__header-time" :style="headerTimeStyle">时长</li>
-        <i class="list_menu__icon_delete" @click="deleteAll()" :style="CModListMenuStyle"></i>
+        <i class="list_menu__icon_delete" @click="MDeleteAll()" :style="CModListMenuStyle"></i>
     </ul>
     <ul class="song-list__list">
-      <li v-for="(item,index) in songs" :key="index" :style="listItemStyle(item)">
+      <li v-for="(item,index) in list" :key="index" :style="listItemStyle(item)">
         <div class="song-list__item">
           <div class="song-list__item__edit sprite" :style="selectedItemLabelStyle(index)">
-            <input type="checkbox"  @click="selectItem(index)" />
+            <input type="checkbox"  @click="MSelectItem(index,$event)" />
           </div>
           <i class="song-list__item__onplay_icon" v-if='item.id === onPlaySong.id'/>
           <div class="song-list__item__number" v-else>{{index + 1 }}</div>
@@ -46,19 +46,20 @@
             </div>
           </div>
           <div class="song-list__item__duration">{{getSongDuration(item.duration)}}</div>
-          <i class="list_menu__icon_delete" @click="deleteItem(index)"></i>
+          <i class="list_menu__icon_delete" @click="MDeleteItem(index)"></i>
         </div>
       </li>
     </ul>
   </div>  
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
  
 export default {
     name: 'SongList',
     data: function(){
       return {
+        list: [],
         selectedItems: [],
         // songs : this.initialSongs.map(value=>{
         //   return{
@@ -69,6 +70,17 @@ export default {
         selectAllIconStyle: null
       }
     },
+    created(){
+      // console.log(this.songs);
+      this.list = this.songs;
+    },
+    watch: {
+      songs(nv,ov){
+        // console.log(nv);
+        // console.log(ov);
+        this.list = nv;
+      }
+    },
     props: {
       songs: {
         type: Array,
@@ -76,18 +88,44 @@ export default {
           return []
         }
       },
-      deleteItem: {},
-      selectItem: {},
-      selectAll: {},
-      deleteAll: {},
-      setPlayList: {
+      setList: {
         type: Function,
-        default: v=>{
-          return null
+        default: ()=>{
+          return []
         }
       },
-      setPlayFlag: {},
-      setPlaySong: {},
+      // deleteItem: {
+      //   type: Function,
+      //   default: v=>{
+      //     return null
+      //   }
+      // },
+      // selectItem: {
+      //   type: Function,
+      //   default: v=>{
+      //     return null
+      //   }
+      // },
+      // selectAll: {
+      //   type: Function,
+      //   default: v=>{
+      //     return null
+      //   }
+      // },
+      // deleteAll: {
+      //   type: Function,
+      //   default: v=>{
+      //     return null
+      //   }
+      // },
+      // setPlayList: {
+      //   type: Function,
+      //   default: v=>{
+      //     return null
+      //   }
+      // },
+      // setPlayFlag: {},
+      // setPlaySong: {},
       // modListMenuStyle: {
       //   type: Object,
       //   default: () => {
@@ -108,6 +146,11 @@ export default {
       }
     },
     methods: {
+      ...mapActions([
+        'setPlayList',
+        'setPlaySong',
+        'setPlayFlag'
+      ]),
       setPlay(value){
         this.setPlayList(value);
         this.setPlayFlag(true);
@@ -154,7 +197,7 @@ export default {
       //   this.selectItem(index);
       // },
       selectedItemLabelStyle(index){
-        if((this.songs[index])&&(this.songs[index].selected)){
+        if((this.list[index])&&(this.list[index].selected)){
           return {
             backgroundPosition: '-60px -80px',
             opacity: 1
@@ -177,6 +220,42 @@ export default {
           }
         }
         return style;
+      },
+      MDeleteAll(){
+        const newList = [];
+        let index = 0;
+        for(let i=0; i<this.list.length; i++){
+          if(!this.list[i].selected){
+            newList[index++] = this.list[i];
+          }
+        }
+        this.list = newList;
+        console.log(newList);
+        this.setList(newList);
+      },
+      MDeleteItem(index){
+        this.list.splice(index,1);
+        this.setList(this.list);
+      },
+      MSelectItem(index, event){
+        // console.log(event);
+        // console.log(event.target.checked);
+        this.list[index].selected = event.target.checked;
+        this.setList(this.list);
+      },
+      MSelectAll(event){
+        let v = false;
+        for(let i=0; i<this.list.length; i++){
+          // this.list[i].selected = event.target.checked;
+          if(!this.list[i].selected){
+            v = true;
+            break;
+          }
+        }
+        for(let i=0; i<this.list.length; i++){
+          this.list[i].selected = v;
+        }
+        this.setList(this.list);
       }
       // setAllItemsSelected(value){
       //   // console.log(value);
@@ -200,8 +279,8 @@ export default {
           backgroundPosition: '-60px -80px',
           opacity: 1
         };
-        for(let i=0;i<this.songs.length;i++){
-          if(!this.songs[i].selected){
+        for(let i=0;i<this.list.length;i++){
+          if(!this.list[i].selected){
             return null; 
           }
         }
@@ -209,9 +288,9 @@ export default {
       },
       addPlayList(){
         let selectedItemArray = [];
-        for(let i=0;i<this.songs.length;i++){
-          if(this.songs[i].selected){
-            selectedItemArray.push(this.songs[i]);
+        for(let i=0;i<this.list.length;i++){
+          if(this.list[i].selected){
+            selectedItemArray.push(this.list[i]);
           }
         }
         return selectedItemArray;

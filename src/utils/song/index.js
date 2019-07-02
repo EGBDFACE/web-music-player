@@ -32,10 +32,10 @@ export function createSonglist(rawData){
 
 function formatHotSong(music){
     const song = new Song({
-        album: music.al,
-        artists: music.ar,
+        album: music.al || music.album,
+        artists: music.ar || music.artists,
         available: true,
-        duration: music.dt,
+        duration: music.dt || music.duration,
         id: music.id,
         name: music.name,
         selected: false

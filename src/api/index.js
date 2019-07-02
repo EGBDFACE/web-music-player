@@ -81,13 +81,13 @@ export function fetchArtistDesc(artistId){
         url: `/artist/desc?id=${artistId}`
     })
 }
-export function fetchPlaylistDetail(playlistId){
-    return axios({
-        method: 'get',
-        baseURL: BASE_URL,
-        url: `/playlist/detail?id=${playlistId}`
-    })
-}
+// export function fetchPlaylistDetail(playlistId){
+//     return axios({
+//         method: 'get',
+//         baseURL: BASE_URL,
+//         url: `/playlist/detail?id=${playlistId}`
+//     })
+// }
 export function fetchAlbumDetail(albumId){
     return axios({
         method: 'get',
@@ -130,5 +130,12 @@ export function fetchTopPlaylist(){
         method: 'get',
         baseURL: BASE_URL,
         url: '/top/playlist'
+    })
+}
+export function fetchPlaylistDetail(playlistId){
+    return axios({
+        method: 'get',
+        baseURL: BASE_URL,
+        url: `/playlist/detail?id=${playlistId}`
     })
 }
