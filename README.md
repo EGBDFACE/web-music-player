@@ -57,15 +57,15 @@ npm start
     <pre>
     	<code>
 ├── README.md
-├── build									// vue配置文件
+├── build                         // vue配置文件
 │   ├── build.js
 │   ├── check-versions.js
 │   ├── logo.png
 │   ├── utils.js
 │   ├── vue-loader.conf.js
-│   ├── webpack.base.conf.js				// webpack基本环境配置
-│   ├── webpack.dev.conf.js					// webpack开发环境配置
-│   └── webpack.prod.conf.js				// webpack生产环境配置
+│   ├── webpack.base.conf.js      // webpack基本环境配置
+│   ├── webpack.dev.conf.js       // webpack开发环境配置
+│   └── webpack.prod.conf.js      // webpack生产环境配置
 ├── config
 │   ├── dev.env.js
 │   ├── index.js
@@ -73,15 +73,15 @@ npm start
 ├── index.html
 ├── package-lock.json
 ├── package.json
-├── src										// 源码目录
-│   ├── App.vue								// 根组件
-│   ├── api									// 网络请求封装
+├── src                           // 源码目录
+│   ├── App.vue                   // 根组件
+│   ├── api                       // 网络请求封装
 │   │   └── index.js
-│   ├── assets								// 资源目录
-│   │   ├── constant.js						// 全局常量
+│   ├── assets                    // 资源目录
+│   │   ├── constant.js           // 全局常量
 │   │   ├── css								
-│   │   │   └── global.sass					// 全局样式
-│   │   └── images							// 精灵图及图标
+│   │   │   └── global.sass       // 全局样式
+│   │   └── images                // 精灵图及图标
 │   │       ├── album_cover_player.png
 │   │       ├── back.svg
 │   │       ├── comment.png
@@ -97,27 +97,27 @@ npm start
 │   │       ├── player_cover.png
 │   │       ├── player_logo.png
 │   │       └── wave.gif
-│   ├── components							// 组件目录
-│   │   ├── ArtistDetail.vue				// 歌手详细
-│   │   ├── LoadingMask.vue					// 加载遮罩
-│   │   ├── PlayFt.vue						// 播放控制
-│   │   ├── Playlist.vue					// 歌单
-│   │   ├── SideBar.vue						// 侧边栏
-│   │   ├── SongList.vue					// 歌曲列表
-│   │   └── TopNav.vue						// 顶部导航栏
-│   ├── main.js								// 入口主文件
+│   ├── components                // 组件目录
+│   │   ├── ArtistDetail.vue      // 歌手详细
+│   │   ├── LoadingMask.vue       // 加载遮罩
+│   │   ├── PlayFt.vue            // 播放控制
+│   │   ├── Playlist.vue          // 歌单
+│   │   ├── SideBar.vue           // 侧边栏
+│   │   ├── SongList.vue          // 歌曲列表
+│   │   └── TopNav.vue            // 顶部导航栏
+│   ├── main.js                   // 入口主文件
 │   ├── pages								
-│   │   ├── HomePage.vue					// 首页
-│   │   ├── MyFootprint.vue					// 足迹
-│   │   ├── OnPlay.vue						// 正在播放
-│   │   ├── Recommand.vue					// 推荐
-│   │   ├── Search.vue						// 搜索
+│   │   ├── HomePage.vue          // 首页
+│   │   ├── MyFootprint.vue       // 足迹
+│   │   ├── OnPlay.vue            // 正在播放
+│   │   ├── Recommand.vue         // 推荐
+│   │   ├── Search.vue            // 搜索
 │   ├── router
-│   │   └── index.js						// 路由配置
+│   │   └── index.js              // 路由配置
 │   ├── store
 │   │   ├── actions.js						
-│   │   ├── index.js						// 创建store
-│   │   ├── modules							// 模块状态
+│   │   ├── index.js              // 创建store
+│   │   ├── modules               // 模块状态
 │   │   │   ├── detail.js
 │   │   │   ├── history.js
 │   │   │   ├── onPlay.js
@@ -125,12 +125,12 @@ npm start
 │   │   │   └── search.js
 │   │   ├── mutationTypes.js
 │   │   └── mutations.js
-│   └── utils								// 工具类
+│   └── utils                     // 工具类
 │       ├── playlist			
-│       │   └── index.js					// 格式化歌单
+│       │   └── index.js          // 格式化歌单
 │       └── song
-│           └── index.js					// 格式化歌曲
-└── static									// 静态资源
+│           └── index.js          // 格式化歌曲
+└── static                        // 静态资源
     └── img
         ├── footprint.png
         ├── onplay.png
