@@ -1,11 +1,33 @@
 <template>
 <div class="subpage_viewport">
-    <p>my footprite</p>
-</div>
+    <SongList
+        v-if="this.historyList.length > 0" 
+        :songs='historyList'
+        :setList='setHistoryList'
+        style="height: 100%"
+        />
+</div>                                                                                                         
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+import SongList from '@/components/SongList.vue';
+
 export default {
-    name: 'MyFootprite'
+    name: 'MyFootprite',
+    components: {
+        SongList
+    },
+    computed: {
+        ...mapState({
+            historyList: state => state.history.historyList,
+            // onPlaySong: state => state.onPlaySong
+        })
+    },
+    methods: {
+        ...mapActions([
+            'setHistoryList'
+        ])
+    }
 }
 </script>

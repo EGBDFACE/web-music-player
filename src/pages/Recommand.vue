@@ -2,24 +2,39 @@
     <div class="subpage_viewport"
         @scroll="MHandlePlaylistsWheel">
         <div class="playlists"
-            v-if="playlistSongs.length === 0" >
+            v-if="(playlistSongs.length === 0)&&(!showLoadingMaskFlag)" >
             <Playlist playlistName="排行榜"
-                :playlist="leaderboard" />
+                :playlist="leaderboard"
+                :setLoadingFlag="MChangeLoadingMaskFlag" />
             <Playlist playlistName='精品歌单'
                 :playlist='highqualityPlaylist' 
-                v-if="showMaxPlaylistIndex > 1" />
+                v-if="showMaxPlaylistIndex > 1" 
+                :setLoadingFlag="MChangeLoadingMaskFlag" />
             <Playlist playlistName='推荐歌单'
                 :playlist='recommandPlaylist' 
-                v-if="showMaxPlaylistIndex > 2" />
+                v-if="showMaxPlaylistIndex > 2" 
+                :setLoadingFlag="MChangeLoadingMaskFlag" />
             <Playlist playlistName='网友精选碟'
                 :playlist='topPlaylist' 
-                v-if="showMaxPlaylistIndex > 3" />
+                v-if="showMaxPlaylistIndex > 3" 
+                :setLoadingFlag="MChangeLoadingMaskFlag" />
         </div>
-        <SongList v-else 
-            :songs='playlistSongs'
-            :setList='setPlaylistSongs'
-            style="height: 100%"
+        <div class="playlists_songs"
+            v-else-if="!showLoadingMaskFlag">
+            <div class="playlists_songs-back">
+                <i class="playlists_songs-back_icon" 
+                    @click="MBackToPlaylists" />
+            </div>
+            <SongList
+                :songs='playlistSongs'
+                :setList='setPlaylistSongs'
+                style="height: 92%"
             />
+        </div>
+        <div class="playlists_loading-mask_box"
+             v-if="showLoadingMaskFlag" >
+            <LoadingMask />
+        </div>
     </div>
 </template>
 
@@ -27,6 +42,7 @@
 import { mapActions, mapState } from 'vuex';
 import { fetchLeaderBoard, fetchHighQualityPlaylist, 
     fetchRecommandPlaylist, fetchTopPlaylist } from '@/api';
+import LoadingMask from '@/components/LoadingMask.vue';
 import Playlist from '@/components/Playlist.vue';
 import SongList from '@/components/SongList.vue';
 import { createPlaylists, formatPlaylist } from '@/utils/playlist';
@@ -46,7 +62,7 @@ function debounce(func,wait=500){
 export default {
     name: 'Recommand',
     components: {
-        Playlist,SongList
+        Playlist,SongList,LoadingMask
     },
     data(){
         return {
@@ -54,7 +70,8 @@ export default {
             // showHighQualityFlag: false,
             // showRecommandFlag: false,
             // showTopFlag: false
-            showMaxPlaylistIndex: 1
+            showMaxPlaylistIndex: 1,
+            showLoadingMaskFlag: false
         }
     },
     // activated(){
@@ -176,8 +193,13 @@ export default {
             const newPlaylistSongs = this.playlistSongs;
             newPlaylistSongs[index].selected = true;
             this.setPlaylistSongs(newPlaylistSongs);
+        },
+        MChangeLoadingMaskFlag(value){
+            this.showLoadingMaskFlag = value;
+        },
+        MBackToPlaylists(){
+            this.setPlaylistSongs([]);
         }
-
     }
 }
 </script>
@@ -188,9 +210,42 @@ export default {
     overflow-x: hidden;
     overflow-y: auto;
 }
-.playlist{
+.playlists{
     height: 100%;
     width: 100%;
+}
+.playlists_songs{
+    @extend .playlists;
+}
+.playlists_songs-back{
+    width: 100%;
+    height: 8%;
+    position: relative;
+    // margin-bottom: 3%;
+}
+.playlists_songs-back_icon{
+    background-image: url('../assets/images/back.svg');
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+    position: absolute;
+    top: 50%;
+    margin-top: -10px;
+    opacity: .5;
+    cursor: pointer;
+    &:hover{
+        opacity: 1;
+    }
+}
+.playlists_loading-mask_box{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: .5;
 }
 </style>
 

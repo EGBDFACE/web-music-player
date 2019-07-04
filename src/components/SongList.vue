@@ -7,10 +7,14 @@
         <li class="song-list__header-name">
           <span>歌曲</span>
           <div class="mod_list_menu" :style="CModListMenuStyle">
-              <i class="list_menu__icon_play" @click="setPlay(addPlayList)" :style="CHeaderListMenuPlayStyle"></i>
-              <i class="list_menu__icon_add"></i>
-              <i class="list_menu__icon_down"></i>
-              <i class="list_menu__icon_share"></i>
+              <i class="list_menu__icon_play" 
+                  @click="setPlay(addPlayList)" 
+                  :style="CHeaderListMenuPlayStyle" />
+              <i class="list_menu__icon_add" 
+                  @click="addPlay(addPlayList)" 
+                  :style="CHeaderListMenuPlayStyle" />
+              <i class="list_menu__icon_down" />
+              <i class="list_menu__icon_share" />
             </div>
           </li>
         <li class="song-list__header-author">歌手</li>
@@ -23,24 +27,33 @@
           <div class="song-list__item__edit sprite" :style="selectedItemLabelStyle(index)">
             <input type="checkbox"  @click="MSelectItem(index,$event)" />
           </div>
-          <i class="song-list__item__onplay_icon" v-if='item.id === onPlaySong.id'/>
+          <i class="song-list__item__onplay_icon" v-if='(item.id === onPlaySong.id)&&onPlayFlag'/>
           <div class="song-list__item__number" v-else>{{index + 1 }}</div>
           <div class="song-list__item__name">
             <span class="song-list__item__name__txt">{{item.name}}</span>
             <div class="mod_list_menu">
-              <i class="list_menu__icon_play" @click="setPlay(item)"></i>
-              <i class="list_menu__icon_add"></i>
-              <i class="list_menu__icon_down"></i>
-              <i class="list_menu__icon_share"></i>
+              <i class="list_menu__icon_play" 
+                  @click="setPlay(item)" />
+              <i class="list_menu__icon_add" 
+                  @click="addPlay(item)"
+                  :style="CHeaderListMenuPlayStyle" />
+              <i class="list_menu__icon_down" />
+              <i class="list_menu__icon_share" />
             </div>
           </div>
           <div class="song-list__item__artists">
             <div v-if="item.artists.length === 1">
-              <span class="song-list__item__artist__txt">{{standardizationArtistName(item.artists[0].name)}}</span>
+              <span class="song-list__item__artist__txt"
+                @click="MHandleArtistClick(item.artists[0])">
+                {{standardizationArtistName(item.artists[0].name)}}
+              </span>
             </div>
             <div v-else-if="item.artists.length != 1">
               <div v-for="(artist,subIndex) in item.artists" :key="subIndex">
-                <span class="song-list__item__artist__txt">{{standardizationArtistName(artist.name)}}</span>
+                <span class="song-list__item__artist__txt"
+                  @click="MHandleArtistClick(artist)">
+                  {{standardizationArtistName(artist.name)}}
+                </span>
                 <span v-if="subIndex != item.artists.length-1 "> / </span>
               </div>
             </div>
@@ -54,7 +67,9 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
- 
+import { fetchArtistSongs } from '@/api';
+import { createHotSongList } from '@/utils/song';
+
 export default {
     name: 'SongList',
     data: function(){
@@ -149,7 +164,10 @@ export default {
       ...mapActions([
         'setPlayList',
         'setPlaySong',
-        'setPlayFlag'
+        'setPlayFlag',
+        'setSearchContext',
+        'setSearchLoadingFlag',
+        'setSearchResult'
       ]),
       setPlay(value){
         this.setPlayList(value);
@@ -164,6 +182,9 @@ export default {
         }else{
           this.setPlaySong(value);
         }
+      },
+      addPlay(value){
+        this.setPlayList(value);
       },
       getSongDuration(value){
         let minute = Math.floor((value/1000)/60);
@@ -256,6 +277,28 @@ export default {
           this.list[i].selected = v;
         }
         this.setList(this.list);
+      },
+      MHandleArtistClick(artist){
+        if(this.$router.path !== '/search'){
+          this.$router.push('/search');
+        }
+        // console.log(artist);
+        this.setSearchResult([]);
+        this.setSearchContext(artist.name);
+        this.setSearchLoadingFlag(true);
+        fetchArtistSongs(artist.id)
+        .then( res => {
+          createHotSongList(res.data.hotSongs)
+          .then( result => {
+            // this.showLoading
+            this.setSearchLoadingFlag(false);
+            this.setSearchResult(result);
+          })
+          .catch( err => {
+            this.setSearchLoadingFlag(false);
+            console.error(err.message);
+          })
+        })
       }
       // setAllItemsSelected(value){
       //   // console.log(value);

@@ -43,6 +43,12 @@ export default {
                 return []
             }
         },
+        setLoadingFlag: {
+            type: Function,
+            default: () => {
+                return undefined
+            }
+        }
     },
     methods: {
         ...mapActions([
@@ -61,14 +67,17 @@ export default {
             }
         },
         MSetPlaylistSongs(value){
+            this.setLoadingFlag(true);
             // console.log(value);
             if(this.playlistName === "排行榜"){
                 createHotSongList(value.songs)
                 .then( result => {
                     // console.log(result);
+                    this.setLoadingFlag(false);
                     this.setPlaylistSongs(result);
                 })
                 .catch( err => {
+                    this.setLoadingFlag(false);
                     console.error(err.message);
                 })
             }else{
@@ -78,19 +87,67 @@ export default {
                     createHotSongList(res.data.playlist.tracks)
                     .then( result => {
                         // console.log(result);
+                        this.setLoadingFlag(false);
                         this.setPlaylistSongs(result);
                     })
                     .catch( err => {
+                        this.setLoadingFlag(false);
                         console.error(err.message);
                     })
                 })
                 .catch( err => {
+                    this.setLoadingFlag(false);
                     console.error(err.message);
                 })
             }
         },
         MSetPlaylist(value){
-            console.log(value);
+            // console.log(value);
+            this.setLoadingFlag(true);
+            if(this.playlistName === '排行榜'){
+                createHotSongList(value.songs)
+                .then( result => {
+                    this.setLoadingFlag(false);
+                    this.setPlayList(result);
+                    // this.setPlaySong(result[0]);
+                    for(let i=0; i<result.length; i++){
+                        if(result[i].available){
+                            this.setPlaySong(result[i]);
+                            break;
+                        }
+                    }
+                    this.setPlayFlag(true);
+                })
+                .catch( err => {
+                    this.setLoadingFlag(false);
+                    console.error(err.message);
+                })
+            }else{
+                fetchPlaylistDetail(value.id)
+                .then( res => {
+                    createHotSongList(res.data.playlist.tracks)
+                    .then( result => {
+                        this.setLoadingFlag(false);
+                        this.setPlayList(result);
+                        // this.setPlaySong(result[0]);
+                        for(let i=0; i<result.length; i++){
+                            if(result[i].available){
+                                this.setPlaySong(result[i]);
+                                break;
+                            }
+                        }
+                        this.setPlayFlag(true);
+                    })
+                    .catch( err => {
+                        this.setLoadingFlag(false);
+                        console.error(err.message);
+                    })
+                })
+                .catch( err => {
+                    this.setLoadingFlag(false);
+                    console.error(err.message);
+                })
+            }
         }
     }
 }
@@ -112,8 +169,10 @@ export default {
 .playlist_item{
     width: 25%;
     margin-right: 8%;
-    // margin-top: 5%;
     margin-bottom: 5%;
+    // width: 182px;
+    // margin-right: 60px;
+    // margin-bottom: 40px;
 }
 .item-pic_box{
     width: 100%;

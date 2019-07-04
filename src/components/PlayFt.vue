@@ -22,10 +22,12 @@
             />
         <div class="player_music">
             <div class="player_music__info" v-if="Object.keys(onPlaySong).length != 0">
-                <span class="info__name">{{onPlaySong.name}}</span>
+                <!-- <span class="info__name">{{onPlaySong.name}}</span> -->
+                <span>{{onPlaySong.name}}</span>
                 <span> - </span>
                 <div v-for="(item,index) in onPlaySong.artists" :key="index" class="info__artists">
-                    <span class="info__artist__name">{{item.name}}</span>
+                    <span class="info__artist__name"
+                        @click="MHandleArtistClick(item)">{{item.name}}</span>
                     <span v-if="index != onPlaySong.artists.length-1"> / </span>
                 </div>
             </div>
@@ -50,13 +52,17 @@
                 </div>
             </div>
         </div>
-        <i class="btn_big_style_list"></i>
-        <i class="btn_big_like"></i>
-        <i class="btn_big_down"></i>
+        <i class="btn_big_style_list" 
+            @click="MChangePlayMod()"
+            :style="CPlayModStyle" />
+        <i class="btn_big_like" />
+        <i class="btn_big_down" />
         <div class="mod_btn_comment"></div>
-        <i class="btn_big_only"></i>
+        <i class="btn_big_only" />
         <div class="player_progress player_voice">
-            <i class="btn_big_voice"></i>
+            <i class="btn_big_voice" 
+                :style="CVoiceIconStyle"
+                @click="MHandleVoiceIconClick()" />
             <div class="player_progress__inner">
                 <div class="player_progress__load"
                     id='voice_bar'
@@ -76,8 +82,9 @@
 
 <script>
 // import axios from 'axios';
-import { fetchSongAudio } from '@/api';
 import { mapActions,mapState } from 'vuex';
+import { fetchArtistSongs, fetchSongAudio } from '@/api';
+import { createHotSongList } from '@/utils/song';
 // import { BASE_URL } from '@/assets/constant.js';
 
 export default {
@@ -89,7 +96,10 @@ export default {
             song: {},
             songUrl: '',
             timer: '00:00',
-            voiceStyle: 'width: 100%'
+            voiceStyle: 'width: 50%',
+            volume: 0.5,
+            playMod: 'list',
+            voiceMuteFlag: false
         }
     },
     mounted(){
@@ -111,6 +121,9 @@ export default {
         onPlaySong(nv, ov){
             // deep: true,
             if((nv != ov)&&(nv.id != ov.id)){
+                // console.log(nv);
+                // console.log(ov);
+                this.setHistoryList(nv);
                 this.song = nv;
                 // axios({
                 //     method: 'get',
@@ -121,6 +134,7 @@ export default {
                 .then( res => {
                     this.songUrl = res.data.data[0].url;
                     this.setProgress();
+                    this.$refs.refAudio.volume = 0.5;
                 })
                 .catch( err => {
                     console.error(err.message);
@@ -131,7 +145,11 @@ export default {
     methods: {
         ...mapActions([
             'setPlayFlag',
-            'setPlaySong'
+            'setPlaySong',
+            'setHistoryList',
+            'setSearchContext',
+            'setSearchLoadingFlag',
+            'setSearchResult'
         ]),
         play(){
             if(this.onPlaySong.id){
@@ -166,42 +184,62 @@ export default {
                 // }
             }
         },
-        next(){
-            const list = this.onPlaySongList;
-            const song = this.onPlaySong;
-            for(let i=0; i<list.length; i++){
-                if(song.id === list[i].id){
-                    if(list.length === 1){
-                        this.$refs.refAudio.currentTime = 0;
-                        break;
-                    }
-                    if(i === list.length-1){
-                        this.setPlaySong(list[0]);
-                    }else{
-                        this.setPlaySong(list[i+1]);
-                    }
-                    break;
-                }
+        MHandleArtistClick(artist){
+            if(this.$router.path !== '/search'){
+                this.$router.push('/search');
             }
+            this.setSearchResult([]);
+            this.setSearchContext(artist.name);
+            this.setSearchLoadingFlag(true);
+            fetchArtistSongs(artist.id)
+            .then( res => {
+                createHotSongList(res.data.hotSongs)
+                .then( result => {
+                    this.setSearchLoadingFlag(false);
+                    this.setSearchResult(result);
+                })
+                .catch( err => {
+                    console.log(err.message);
+                    this.setSearchLoadingFlag(false);
+                })
+            })
         },
-        previous(){
-            const list = this.onPlaySongList;
-            const song = this.onPlaySong;
-            for(let i=0; i<list.length; i++){
-                if(song.id === list[i].id){
-                    if(list.length === 1){
-                        this.$refs.refAudio.currentTime = 0;
-                        break;
-                    }
-                    if(i === 0){
-                        this.setPlaySong(list[list.length-1]);
-                    }else{
-                        this.setPlaySong(list[i-1]);
-                    }
-                    break;
-                }
-            }
-        },
+        // next(){
+        //     const list = this.onPlaySongList;
+        //     const song = this.onPlaySong;
+        //     for(let i=0; i<list.length; i++){
+        //         if(song.id === list[i].id){
+        //             if(list.length === 1){
+        //                 this.$refs.refAudio.currentTime = 0;
+        //                 this.$refs.refAudio.play();
+        //             }
+        //             if(i === list.length-1){
+        //                 this.setPlaySong(list[0]);
+        //             }else{
+        //                 this.setPlaySong(list[i+1]);
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // },
+        // previous(){
+        //     const list = this.onPlaySongList;
+        //     const song = this.onPlaySong;
+        //     for(let i=0; i<list.length; i++){
+        //         if(song.id === list[i].id){
+        //             if(list.length === 1){
+        //                 this.$refs.refAudio.currentTime = 0;
+        //                 break;
+        //             }
+        //             if(i === 0){
+        //                 this.setPlaySong(list[list.length-1]);
+        //             }else{
+        //                 this.setPlaySong(list[i-1]);
+        //             }
+        //             break;
+        //         }
+        //     }
+        // },
         setProgress(){
             const audio = this.$refs.refAudio;
             this.timer = '00:00';
@@ -254,15 +292,18 @@ export default {
             }
         },
         handleVoiceClick(e){
+            this.voiceMuteFlag = false;
             const voicePosLeft = document.getElementById('voice_bar').getBoundingClientRect().left;
             const voiceLength = document.getElementById('voice_bar').getBoundingClientRect().width;
             const clickPosX = e.pageX;
             const percent = (clickPosX-voicePosLeft)/voiceLength;
             this.$refs.refAudio.volume = percent;
+            this.volume = percent;
             this.voiceStyle = 'width:' + percent*100 + '%';
         },
         handleVoiceDrag(e){
             e.preventDefault();
+            this.voiceMuteFlag = false;
             const voicePosLeft = document.getElementById('voice_bar').getBoundingClientRect().left;
             const voiceLength = document.getElementById('voice_bar').getBoundingClientRect().width;
             const _this = this;
@@ -275,8 +316,119 @@ export default {
                 const percent = pos/voiceLength;
                 if((percent<=1)&&(percent>=0)){
                     _this.$refs.refAudio.volume = percent;
+                    _this.volume = percent;
                     _this.voiceStyle = 'width:' + percent*100 + '%';
                 }
+            }
+        },
+        MChangePlayMod(){
+            const modList = ['list','single','order','random'];
+            const index = modList.indexOf(this.playMod);
+            if(index === modList.length-1){
+                this.playMod = 'list';
+            }else{
+                this.playMod = modList[index+1];
+            }
+        },
+        // MHandleAudioEnded(){
+        next(){
+            const list = this.onPlaySongList;
+            const song = this.onPlaySong;
+            switch(this.playMod){
+                case 'list':
+                    // this.next();
+                    for(let i=0; i<list.length; i++){
+                        if(song.id === list[i].id){
+                            if(list.length === 1){
+                                this.$refs.refAudio.currentTime = 0;
+                                this.$refs.refAudio.play();
+                            }
+                            if(i === list.length-1){
+                                this.setPlaySong(list[0]);
+                            }else{
+                                this.setPlaySong(list[i+1]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case 'single':
+                    this.$refs.refAudio.currentTime = 0;
+                    this.$refs.refAudio.play();
+                    break;
+                case 'order':
+                    for(let i=0; i<list.length; i++){
+                        if(song.id === list[i].id){
+                            if((list.length === 1)||(i === list.length-1)){
+                                this.$refs.refAudio.currentTime = 0;
+                                this.$refs.refAudio.pause();
+                                this.setPlayFlag(false);
+                            }else{
+                                this.setPlaySong(list[i+1]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case 'random':
+                    const newSongIndex = Math.floor(Math.random()*list.length);
+                    const newSong = list[newSongIndex];
+                    this.setPlaySong(newSong);
+                    break;
+            }
+        },
+        previous(){
+            const list = this.onPlaySongList;
+            const song = this.onPlaySong;
+            switch(this.playMod){
+                case 'list':
+                    for(let i=0; i<list.length; i++){
+                        if(song.id === list[i].id){
+                            if(list.length === 1){
+                                this.$refs.refAudio.currentTime = 0;
+                                this.$refs.refAudio.play();
+                            }
+                            if(i === 0){
+                                this.setPlaySong(list[list.length-1]);
+                                break;
+                            }else{
+                                this.setPlaySong(list[i-1]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case 'single':
+                    this.$refs.refAudio.currentTime = 0;
+                    this.$refs.refAudio.play();
+                    break;
+                case 'order':
+                    for(let i=0; i<list.length; i++){
+                        if(song.id === list[i].id){
+                            if((list.length === 1)||(i === 0)){
+                                this.$refs.refAudio.currentTime = 0;
+                                this.$refs.refAudio.pause();
+                                this.setPlayFlag(false);
+                            }else{
+                                this.setPlaySong(list[i-1]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case 'random':
+                    const newSongIndex = Math.floor(Math.random()*list.length);
+                    const newSong = list[newSongIndex];
+                    this.setPlaySong(newSong);
+                    break;
+            }
+        },
+        MHandleVoiceIconClick(){
+            this.voiceMuteFlag = !this.voiceMuteFlag;
+            if(this.voiceMuteFlag){
+                this.$refs.refAudio.volume = 0;
+            }else{
+                this.$refs.refAudio.volume = this.volume;
             }
         }
     },
@@ -297,7 +449,34 @@ export default {
             }else{
                 return '00:00'
             }
-            
+        },
+        CPlayModStyle(){
+            switch(this.playMod){
+                case 'list':
+                    return undefined;
+                case 'single':
+                    return {
+                        backgroundPosition: '0 -232px'
+                    }
+                case 'order':
+                    return {
+                        backgroundPosition: '0 -260px'
+                    }
+                case 'random':
+                    return {
+                        backgroundPosition: '0 -74px'
+                    }
+                default: return undefined
+            }
+        },
+        CVoiceIconStyle(){
+            if(this.voiceMuteFlag){
+                return {
+                    backgroundPosition: '0 -182px'
+                }
+            }else{
+                return undefined
+            }
         }
     }
 }
@@ -415,7 +594,8 @@ export default {
     top: 4px;
     right: 378px;
     width: 26px;
-    height: 25px;
+    // height: 25px;
+    height: 22px;
     background-position: 0 -205px;
 }
 .btn_big_like{

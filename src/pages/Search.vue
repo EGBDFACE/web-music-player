@@ -59,6 +59,10 @@
             :setList="setSearchResult"
             v-if="state_searchResult.length != 0" 
             />
+        <div class="search_loading-mask_box"
+            v-if="state_searchLoadingFlag">
+            <LoadingMask />
+        </div>
     </div>
 </template>
 
@@ -72,6 +76,7 @@ import store from '@/store';
 // import axios from 'axios';
 import { BASE_URL } from '@/assets/constant.js';
 import ArtistDetail from '@/components/ArtistDetail.vue';
+import LoadingMask from '@/components/LoadingMask.vue';
 import SongList from '@/components/SongList.vue';
 import { createHotSongList } from '@/utils/song';
 
@@ -93,12 +98,14 @@ export default {
                 albums: '专辑',
                 mvs: 'MV',
                 playlists: '歌单'
-            }
+            },
+            // showLoadingMaskFlag: false
         }
     },
     components: {
         ArtistDetail,
-        SongList
+        SongList,
+        LoadingMask
     },
     created(){
         fetchSearchHot()
@@ -114,19 +121,33 @@ export default {
         .catch(err=>{
             console.error(err.message);
         });
+        this.searchContext = this.state_searchContext;
+    },
+    watch: {
+        state_searchContext(nv,ov){
+            this.searchContext = nv;
+        }
     },
     methods:{
         resolveSearchSuggest(type,value){
+            // this.showLoadingMaskFlag = true;
+            this.setSearchLoadingFlag(true);
+            this.setSearchResult([]);
             switch(type){
                 case 'songs':
                     fetchCheckMusic(value.id)
                     .then( res => {
                         value.available = true;
+                        // this.showLoadingMaskFlag = false;
+                        this.setSearchLoadingFlag(false);
+                        this.$router.push('/onplay');
                         this.setPlayList(value);
                         this.setPlaySong(value);
                         this.setPlayFlag(true);
                     })
                     .catch( err => {
+                        // this.showLoadingMaskFlag = false;
+                        this.setSearchLoadingFlag(false);
                         console.error(err.message);
                     })
                     break;
@@ -135,17 +156,23 @@ export default {
                     .then( res => {
                         // this.setArtistInfo(res.data.artist);
                         // this.setArtistSongs(res.data);
-                        console.log(res);
+                        // console.log(res);
                         createHotSongList(res.data.hotSongs)
                         .then( result => {
-                            console.log(result);
+                            // console.log(result);
+                            // this.showLoadingMaskFlag = false;
+                            this.setSearchLoadingFlag(false);
                             this.setSearchResult(result);
                         })
                         .catch( err => {
+                            // this.showLoadingMaskFlag = false;
+                            this.setSearchLoadingFlag(false);
                             console.error(err.message);
                         })
                     })
                     .catch( err => {
+                        // this.showLoadingMaskFlag = false;
+                        this.setSearchLoadingFlag(false);
                         console.error(err.message);
                     })
                     break;
@@ -155,14 +182,20 @@ export default {
                         console.log(res);
                         createHotSongList(res.data.songs)
                         .then( result => {
-                            console.log(result);
+                            // console.log(result);
+                            // this.showLoadingMaskFlag = false;
+                            this.setSearchLoadingFlag(false);
                             this.setSearchResult(result);
                         })
                         .catch( err => {
+                            // this.showLoadingMaskFlag = false;
+                            this.setSearchLoadingFlag(false);
                             console.error(err.message);
                         })
                     })
                     .catch( err => {
+                        // this.showLoadingMaskFlag = false;
+                        this.setSearchLoadingFlag(false);
                         console.error(err.message);
                     })
                     break;
@@ -178,22 +211,30 @@ export default {
                 case 'playlists':
                     fetchPlaylistDetail(value.id)
                     .then( res => {
-                        console.log(res);
+                        // console.log(res);
                         createHotSongList(res.data.playlist.tracks)
                         .then( result => {
-                            console.log(result);
+                            // console.log(result);
+                            // this.showLoadingMaskFlag = false; 
+                            this.setSearchLoadingFlag(false);
                             this.setSearchResult(result);
                         })
                         .catch( err => {
+                            // this.showLoadingMaskFlag = false;
+                            this.setSearchLoadingFlag(false);
                             console.error(err.message);
                         })
                     })
                     .catch( err => {
+                        // this.showLoadingMaskFlag = false;
+                        this.setSearchLoadingFlag(false);
                         console.error(err.message);
                     })
                     break;
             }
             // console.log(this);
+            this.searchContext = value.name;
+            this.setSearchContext(value.name);
             this.inputFocus = false;
             this.smartBoxFocus = false;
             // this.setInputBlur();
@@ -212,11 +253,11 @@ export default {
             return all_artists;
         },
         getSearchSuggest(value){
-            // console.log(value);
             if(value){
+                this.inputFocus = true;
                 fetchSearchSuggest(value)
                 .then(res=>{
-                    console.log(res);
+                    // console.log(res);
                     const result = res.data.result;
                     for(let i=0; i<result.order.length; i++){
                         if(result.order[i] === 'mvs'){
@@ -230,35 +271,55 @@ export default {
                     this.searchSuggest = {};
                     console.error(err.message);
                 })
+            }else{
+                this.inputFocus = false;
             }
         },
         getSearchResult(value){
+            this.setSearchResult([]);
+            // this.showLoadingMaskFlag = true;
+            this.setSearchLoadingFlag(true);
             if(value){
                 this.songs = [];
                 fetchSearchResult(value)
                 .then(res=>{
-                    console.log(res);
+                    // console.log(res);
                     this.searchContext = value;
-                    let list= res.data.result.songs;
-                    for(let i=0;i<list.length;i++){
-                        fetchCheckMusic(list[i].id)
-                        .then( (res) => {
-                            list[i].selected = false;
-                            list[i].available = true;
-                            if(i === list.length-1){
-                                this.songs = list;
-                                this.setSearchResult(list);
-                            }
-                        })
-                        .catch( err => {
-                            list[i].available = false;
-                            if(i === list.length-1){
-                                this.songs = list;
-                                this.setSearchResult(list);
-                            }
-                            // console.error(list[i].name + '暂无版权');
-                        })
-                    }
+                    this.setSearchContext(value);
+                    createHotSongList(res.data.result.songs)
+                    .then( result => {
+                        this.songs = result;
+                        this.setSearchResult(result);
+                        // this.showLoadingMaskFlag = false;
+                        this.setSearchLoadingFlag(false);
+                    })
+                    .catch( err => {
+                        console.log(err.message);
+                        // this.showLoadingMaskFlag = false;
+                        this.setSearchLoadingFlag(false);
+                    })
+                    // let list= res.data.result.songs;
+                    // for(let i=0;i<list.length;i++){
+                    //     fetchCheckMusic(list[i].id)
+                    //     .then( (res) => {
+                    //         list[i].selected = false;
+                    //         list[i].available = true;
+                    //         if(i === list.length-1){
+                    //             this.songs = list;
+                    //             this.setSearchResult(list);
+                    //             this.showLoadingMaskFlag = false;
+                    //         }
+                    //     })
+                    //     .catch( err => {
+                    //         list[i].available = false;
+                    //         if(i === list.length-1){
+                    //             this.songs = list;
+                    //             this.setSearchResult(list);
+                    //             this.showLoadingMaskFlag = false;
+                    //         }
+                    //         // console.error(list[i].name + '暂无版权');
+                    //     })
+                    // }
                     if(this.searchHistory.indexOf(value) === -1){
                         this.searchHistory.push(value);
                     }
@@ -324,19 +385,21 @@ export default {
             return value.length > 0 ? null : { display: 'none'};
         },
         ...mapActions([
-            'delAllSearchResultItem',
-            'delSearchResultItem',
-            'selAllSearchResultItem',
-            'setArtistAlbums',
-            'setArtistDesc',
-            'setArtistInfo',
-            'setArtistMvs',
-            'setArtistSongs',
+            // 'delAllSearchResultItem',
+            // 'delSearchResultItem',
+            // 'selAllSearchResultItem',
+            // 'setArtistAlbums',
+            // 'setArtistDesc',
+            // 'setArtistInfo',
+            // 'setArtistMvs',
+            // 'setArtistSongs',
             'setPlayList',
             'setPlaySong',
             'setPlayFlag',
+            'setSearchContext',
             'setSearchResult',
-            'selSearchResultItem',
+            'setSearchLoadingFlag'
+            // 'selSearchResultItem',
         ])
     },
     computed: {
@@ -345,7 +408,9 @@ export default {
         // },
         ...mapState({
             artistDetail: state => state.search.artist,
-            state_searchResult: state => state.search.searchResult
+            state_searchResult: state => state.search.searchResult,
+            state_searchContext: state => state.search.searchContext,
+            state_searchLoadingFlag: state => state.search.loadingFlag
         })
     }
 }
@@ -495,5 +560,11 @@ export default {
 .search-artist_viewport
     width: 100%
     height: 80%
+.search_loading-mask_box
+    width: 100%
+    height: 88%
+    display: flex
+    align-items: center
+    justify-content: center
+    opacity: .5
 </style>
-``

@@ -71,7 +71,7 @@ const recommand = {
             commit(types.SET_TOP_PLAYLIST,value);
         },
         setPlaylistSongs({commit},value){
-            console.log(value);
+            // console.log(value);
             commit(types.SET_PLAYLIST_SONGS,value);
         },
         // delRecommandAllPlaylistItem(){

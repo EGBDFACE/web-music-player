@@ -26,13 +26,13 @@ export default {
     },
     methods: {
         ...mapActions([
-            'selPlayListItem',
-            'selAllPlayListItem',
-            'delPlayListItem',
-            'delAllPlayListItem',
+            // 'selPlayListItem',
+            // 'selAllPlayListItem',
+            // 'delPlayListItem',
+            // 'delAllPlayListItem',
             'setPlayList',
-            'setPlaySong',
-            'setPlayFlag'
+            // 'setPlaySong',
+            // 'setPlayFlag'
         ])
     }
 }

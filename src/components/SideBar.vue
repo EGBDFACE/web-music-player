@@ -7,20 +7,23 @@
         </div>
         <div class="song_info__name" v-if='onPlaySong.id'>
             <span>歌曲名：</span>
-            <span class="info_clickable">{{onPlaySong.name}}</span>
+            <!-- <span class="info_clickable">{{onPlaySong.name}}</span> -->
+            <span>{{onPlaySong.name}}</span>
         </div>
         <div class="song_info__singer" v-if='onPlaySong.id'>
             <span>歌手名：</span>
             <div v-for='(item,index) in onPlaySong.artists' 
                 :key='index'
                 style='display: inline'>
-                <span class="info_clickable">{{item.name}}</span>
+                <span class="info_clickable"
+                    @click="MHandleArtistClick(item)">{{item.name}}</span>
                 <span v-if='index != onPlaySong.artists.length-1'>/ </span>
             </div>
         </div>
         <div class="song_info__album" v-if='onPlaySong.id'>
             <span>专辑名：</span>
-            <span class="info_clickable">{{onPlaySong.album.name}}</span>
+            <span class="info_clickable"
+                @click="MHandleAlbumClick(onPlaySong.album)">{{onPlaySong.album.name}}</span>
         </div>
     </div>
     <div class="song_info__lyric" 
@@ -32,7 +35,7 @@
                 id='lyric-inner'>
                 <p v-for='(item,index) in songLyric'
                     :key='index'
-                    :style='setLyricItemStyle(index)'
+                    :style='setLyricItemStyle(item,index)'
                     >{{filterLyric(item)}}</p>
             </div>
         <!-- </div> -->
@@ -42,8 +45,9 @@
 </template>
 
 <script>
-import { fetchSongDetail, fetchSongLyric } from '@/api';
 import { mapActions, mapState } from 'vuex';
+import { fetchAlbumDetail, fetchArtistSongs, fetchSongDetail, fetchSongLyric } from '@/api';
+import { createHotSongList } from '@/utils/song';
 
 export default {
     name: 'SideBar',
@@ -80,6 +84,23 @@ export default {
                         for(let i=0; i<songLyricRes.length; i++){
                             if((!songLyricRes[i].endsWith(']'))&&(songLyricRes[i].startsWith('['))){
                                 newSongLyricArray[index++] = songLyricRes[i];
+                                // const songLyricResArray = songLyricRes[i].split(' ');
+                                // if(songLyricResArray.length > 8){
+                                //     let firstSongLyricItem = '', secondSongLyricItem = '';
+                                //     for(let j=0;j<songLyricResArray.length; i++){
+                                //         if(j<songLyricResArray.length/2){
+                                //             firstSongLyricItem += songLyricResArray[j]+' ';
+                                //         }else{
+                                //             secondSongLyricItem += songLyricResArray[j]+' ';
+                                //         }
+                                //     }
+                                //     let firstSongLyricItemTimeMinute = 
+                                //     if(i === songLyricRes.length-1){
+
+                                //     }
+                                // }else{
+                                //     newSongLyricArray[index++] = songLyricRes[i];
+                                // }
                             }
                         }
                         for(let i=0; i<songLyricTranRes.length; i++){
@@ -115,6 +136,11 @@ export default {
         }
     },
     methods: {
+        ...mapActions([
+            'setSearchContext',
+            'setSearchLoadingFlag',
+            'setSearchResult'
+        ]),
         filterLyric(value){
             while((value.indexOf('[')!==-1)||(value.indexOf(']')!==-1)){
                 value = value.slice(value.indexOf(']')+1);
@@ -142,9 +168,17 @@ export default {
                 // this.lyricInnerStyle = `transform: translateY(${lyricTransformTop}px)`
             },1000)
         },
-        setLyricItemStyle(index){
+        setLyricItemStyle(item,index){
             if(index === this.lyricItemIndex){
-                return 'color: #31c27c'
+                if(item.length > 65){
+                    return {
+                        color: '#31c27c',
+                        transform: 'translate(-100px,0)',
+                        transition: '3s'
+                    }
+                }else{
+                    return 'color: #31c27c';
+                }
             }else{
                 return undefined
             }
@@ -164,6 +198,46 @@ export default {
                 // console.log(lyricTop);
                 // console.log(ev.pageY);
             }
+        },
+        MHandleArtistClick(artist){
+            if(this.$router.path !== '/search'){
+                this.$router.push('/search');
+            }
+            this.setSearchResult([]);
+            this.setSearchContext(artist.name);
+            this.setSearchLoadingFlag(true);
+            fetchArtistSongs(artist.id)
+            .then( res => {
+                createHotSongList(res.data.hotSongs)
+                .then( result => {
+                    this.setSearchLoadingFlag(false);
+                    this.setSearchResult(result);
+                })
+                .catch( err => {
+                    console.error(err.message);
+                    this.setSearchLoadingFlag(false);
+                })
+            })
+        },
+        MHandleAlbumClick(album){
+            if(this.$router.path !== '/search'){
+                this.$router.push('/search');
+            }
+            this.setSearchResult([]);
+            this.setSearchContext(album.name);
+            this.setSearchLoadingFlag(true);
+            fetchAlbumDetail(album.id)
+            .then( res => {
+                createHotSongList(res.data.songs)
+                .then( result => {
+                    this.setSearchLoadingFlag(false);
+                    this.setSearchResult(result);
+                })
+                .catch( err => {
+                    console.error(err.message);
+                    this.setSearchLoadingFlag(false);
+                })
+            })
         }
     }
 }
@@ -259,6 +333,7 @@ export default {
     cursor: grab;
     p{
         margin: 5px auto;
+        white-space: nowrap;
     }
 }
 </style>

@@ -10,9 +10,9 @@
                         <router-link to='/onplay'>正在播放</router-link>
                         <router-link to='/recommand'>推荐</router-link>
                         <router-link to='/search'>搜索</router-link>
-                        <!-- <router-link to='/MyPlayList'>我的歌单</router-link>
-                        <router-link to='/MyFootprint'>我听过的</router-link> -->
-                        <router-link to='/detail'>详情</router-link>
+                        <!-- <router-link to='/MyPlayList'>我的歌单</router-link> -->
+                        <router-link to='/MyFootprint'>我听过的</router-link>
+                        <!-- <router-link to='/detail'>详情</router-link> -->
                     </div>
                     <router-view/>
                     <SideBar/>
