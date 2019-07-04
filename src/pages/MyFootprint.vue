@@ -12,7 +12,6 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import SongList from '@/components/SongList.vue';
-
 export default {
     name: 'MyFootprite',
     components: {
@@ -31,3 +30,9 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.subpage_viewport{
+    height: 90%;
+}
+</style>
