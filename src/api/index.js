@@ -139,3 +139,12 @@ export function fetchPlaylistDetail(playlistId){
         url: `/playlist/detail?id=${playlistId}`
     })
 }
+
+// comment
+export function fetchComment (musicId) {
+    return axios ({
+        method: 'get',
+        baseURL: BASE_URL,
+        url: `/comment/music?id=${musicId}`
+    })
+}

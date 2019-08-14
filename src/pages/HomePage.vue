@@ -81,7 +81,8 @@ export default {
 }
 @media (max-width: 1300px){
   .player_style_normal{
-      margin-right: 280px;
+    //   margin-right: 280px;
+    margin-right: 320px;
   }  
 }
 

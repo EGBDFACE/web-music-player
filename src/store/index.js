@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 
 import actions from './actions';
 
+import comment from './modules/comment';
 // import detail from './modules/detail';
 import history from './modules/history';
 import onPlay from './modules/onPlay';
@@ -14,6 +15,7 @@ import mutations from './mutations';
 Vue.use(Vuex);
 const store = new Vuex.Store({
     modules: {
+        comment: comment,
         // detail: detail,
         history: history,
         onPlay: onPlay,

@@ -39,3 +39,6 @@ export const SET_PLAYLIST_SONGS = 'SET_PLAYLIST_SONGS';
 
 // module history
 export const SET_HISTORY_LIST = 'SET_HISTORY_LIST';
+
+// module comment
+export const SET_COMMENT_LIST = 'SET_COMMENT_LIST';
