@@ -23,7 +23,9 @@ const store = new Vuex.Store({
         search: search
     },
     state: {
+        // 正在播放歌曲
         onPlaySong: {},
+        // 播放状态：true表示正在播放，false表示暂停或未播放
         onPlayFlag: false,
     },
     actions,

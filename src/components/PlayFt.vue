@@ -148,10 +148,10 @@ export default {
                 .catch( err => {
                     console.error(err.message);
                 })
-                fetchComment (nv.id) 
+                fetchComment (nv.id, 0,0) 
                 .then ( res=> {
                     this.commentsNumber = res.data.total;
-                    this.setComments(createComments(res.data));
+                    this.setComments(createComments(res.data,nv.id));
                     if (res.data.total < 1) {
                         this.commentsNumber = undefined;
                     }

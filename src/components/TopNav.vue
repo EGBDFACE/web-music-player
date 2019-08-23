@@ -1,9 +1,9 @@
 <template>
     <div>
         <h1 class='player_logo'>
-            <a href="https://github.com/JackChuChou/web-music-player" rel="noopener" target="_blank">
+            <!-- <a href="https://github.com/JackChuChou/web-music-player" rel="noopener" target="_blank">
                 <i class='player_logo_pic'></i>
-            </a>
+            </a> -->
         </h1>
         <div class='mod_player_login'></div>
     </div>  
@@ -25,7 +25,8 @@ export default{
     background-image: url('../assets/images/logo_jackchu.png');
     display: inline-block;
     height: 39px;
-    width: 226px;
+    /* width: 226px; */
+    width: 130px;
     background-size: cover;
     background-repeat: no-repeat;
     opacity: .3;

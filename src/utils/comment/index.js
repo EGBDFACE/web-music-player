@@ -55,12 +55,13 @@ function formatCommentItem (comment) {
     return commentItem;
 }
 
-export function createComments (rawData) {
+export function createComments (rawData,musicId) {
     const comments = {
         comments: new Array(),
         hasMore: rawData.more,
         hasMoreHot: rawData.moreHot,
         hotComments: new Array(),
+        musicId,
         offset: 0,
         totalCount: rawData.total,
     }
@@ -69,6 +70,19 @@ export function createComments (rawData) {
     }
     for (let i=0; i<rawData.hotComments.length; i++) {
         comments.hotComments[i] = formatCommentItem(rawData.hotComments[i]);
+    }
+    return comments;
+}
+export function createCommentsWithoutHot( rawData, musicId, offset) {
+    const comments = {
+        comments: new Array(),
+        hasMore: rawData.more,
+        musicId,
+        offset,
+        totalCount: rawData.total,
+    }
+    for (let i=0; i<rawData.comments.length; i++) {
+        comments.comments[i] = formatCommentItem(rawData.comments[i]);
     }
     return comments;
 }

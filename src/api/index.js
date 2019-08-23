@@ -141,10 +141,19 @@ export function fetchPlaylistDetail(playlistId){
 }
 
 // comment
-export function fetchComment (musicId) {
+// export function fetchComment (musicId,offset, before) {
+export function fetchComment (musicId, offset){
+    let urlStr = `/comment/music?id=${musicId}`;
+    if (offset) {
+        urlStr += `&offset=${offset}`;
+    }
+    // if (before) {
+    //     url += `&before=${before}`;
+    // }
     return axios ({
         method: 'get',
         baseURL: BASE_URL,
-        url: `/comment/music?id=${musicId}`
+        // url: `/comment/music?id=${musicId}&offset=${offset}&before=${before}`
+        url: urlStr
     })
 }
