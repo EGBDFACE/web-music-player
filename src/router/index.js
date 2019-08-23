@@ -18,6 +18,7 @@ const MyFootprint = r => require.ensure([],()=>r (require('../pages/MyFootprint.
 const Recommand = r => require.ensure([],()=>r (require('../pages/Recommand.vue')),'/Recommand');
 const Search = r => require.ensure([],()=>r (require('../pages/Search.vue')),'/Search');
 const Onplay = r => require.ensure([],()=>r (require('../pages/Onplay.vue')),'/Onplay');
+const Comment = r => require.ensure([],()=>r (require('../pages/Comment.vue')),'/Comment');
 // const SearchDetail = r => require.ensure([],()=>r (require('../pages/SearchDetail.vue')),'/SearchDetail');
 // import MyFootprint from '@/pages/MyFootPrint';
 // import MyPlayList from '@/pages/MyPlayList';
@@ -88,6 +89,10 @@ export default new Router({
         {
           path: 'MyFootPrint', 
           component: MyFootprint
+        },
+        {
+          path: 'comment',
+          component: Comment
         },
         // {
         //   path: 'detail',

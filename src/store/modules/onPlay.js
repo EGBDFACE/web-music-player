@@ -69,7 +69,6 @@ const onPlay = {
                 }
                 // commit(types.SET_PLAY_SONG,value);
             }
-            console.log(newList);
             commit(types.SET_PLAY_LIST,newList);
         },
         // selPlayListItem({commit,state},index){

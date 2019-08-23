@@ -1,6 +1,7 @@
 <template>
     <div class="content_page_fill">
         <TopNav/>
+        <BackgroundPic />
         <div class="mod_player">
             <div class="player__bd">
                 <div class="player_style_normal">
@@ -24,10 +25,10 @@
 </template>
 
 <script>
-
-import TopNav from '@/components/TopNav';
-import SideBar from '@/components/SideBar';
+import BackgroundPic from '@/components/BackgroundPic';
 import PlayFt from '@/components/PlayFt';
+import SideBar from '@/components/SideBar';
+import TopNav from '@/components/TopNav';
 
 export default {
     name: 'HomePage',
@@ -37,7 +38,7 @@ export default {
     //     }
     // },
     components: {
-        TopNav, SideBar, PlayFt
+        BackgroundPic, PlayFt, SideBar, TopNav
     }
     // computed: {
     //     nowRoute: function(){
@@ -81,7 +82,8 @@ export default {
 }
 @media (max-width: 1300px){
   .player_style_normal{
-      margin-right: 280px;
+    //   margin-right: 280px;
+    margin-right: 320px;
   }  
 }
 

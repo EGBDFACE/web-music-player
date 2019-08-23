@@ -254,6 +254,11 @@ export default {
     font-size: 14px;
     line-height: 24px;
 }
+@media(max-width: 1300px){
+    .mod_song_info{
+        width: 300px;
+    }
+}
 .song_info__info{
     width: 100%;
     height: 45%;
@@ -303,6 +308,8 @@ export default {
     }
 }
 .song_info__lyric{
+    position: absolute;
+    top: 320px;
     width: 100%;
     height: 45%;
     overflow: hidden;

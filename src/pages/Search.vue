@@ -428,9 +428,9 @@ export default {
         &:hover
             opacity: 1
     input
-        // background-color: rgba(0,0,0,.2)
+        background-color: rgba(0,0,0,0)
         margin: 0 auto
-        background-color: #292a2b
+        // background-color: #292a2b
         display: block
         width: 500px
         height: 40px
@@ -440,7 +440,7 @@ export default {
         font-size: 14px
         border: 1px solid hsla(0,0%,100%,.6)
         outline: 0
-        opacity: .8
+        // opacity: .8
     .hot-search-til
         display: inline
         opacity: .3 

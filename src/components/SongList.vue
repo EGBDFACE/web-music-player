@@ -32,7 +32,11 @@
           <div class="song-list__item__name">
             <span class="song-list__item__name__txt">{{item.name}}</span>
             <div class="mod_list_menu">
+              <i class="list_menu__icon_pause"
+                  v-if="onPlaySong && onPlaySong.id == item.id && onPlayFlag"
+                  @click="setPause()" />
               <i class="list_menu__icon_play" 
+                  v-else
                   @click="setPlay(item)" />
               <i class="list_menu__icon_add" 
                   @click="addPlay(item)"
@@ -170,18 +174,26 @@ export default {
         'setSearchResult'
       ]),
       setPlay(value){
-        this.setPlayList(value);
-        this.setPlayFlag(true);
-        if(Object.prototype.toString.call(value) === '[object Array]'){
-          for(let i=0; i<value.length; i++){
-            if(value[i].available){
-              this.setPlaySong(value[i]);
-              break;
+        if (this.onPlaySong.id == value.id) {
+          document.getElementsByTagName('audio')[0].play();
+        } else {
+          this.setPlayList(value);
+          if(Object.prototype.toString.call(value) === '[object Array]'){
+            for(let i=0; i<value.length; i++){
+              if(value[i].available){
+                this.setPlaySong(value[i]);
+                break;
+              }
             }
+          }else{
+            this.setPlaySong(value);
           }
-        }else{
-          this.setPlaySong(value);
         }
+        this.setPlayFlag(true);
+      },
+      setPause() {
+        document.getElementsByTagName('audio')[0].pause();
+        this.setPlayFlag(false);
       },
       addPlay(value){
         this.setPlayList(value);
@@ -525,6 +537,9 @@ export default {
 .list_menu__icon_play
   @include list_menu__item
   background-position: -120px 0
+.list_menu__icon_pause
+  @include list_menu__item
+  background-position: -120px -200px
 .list_menu__icon_add
   @include list_menu__item
   background-position: -120px -80px

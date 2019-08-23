@@ -57,7 +57,10 @@
             :style="CPlayModStyle" />
         <i class="btn_big_like" />
         <i class="btn_big_down" />
-        <div class="mod_btn_comment"></div>
+        <a :class="CCommentClass"
+            href="#/comment">
+            <span class="btn_comment__numbers">{{commentsNumber}}</span>
+        </a>
         <i class="btn_big_only" />
         <div class="player_progress player_voice">
             <i class="btn_big_voice" 
@@ -83,14 +86,16 @@
 <script>
 // import axios from 'axios';
 import { mapActions,mapState } from 'vuex';
-import { fetchArtistSongs, fetchSongAudio } from '@/api';
+import { fetchArtistSongs, fetchComment, fetchSongAudio } from '@/api';
 import { createHotSongList } from '@/utils/song';
+import { createComments } from '@/utils/comment';
 // import { BASE_URL } from '@/assets/constant.js';
 
 export default {
     name: 'PlayFt',
     data: function(){
         return {
+            commentsNumber: undefined,
             progressStyle: '',
             // progressPosPrev: 0,
             song: {},
@@ -134,9 +139,24 @@ export default {
                 .then( res => {
                     this.songUrl = res.data.data[0].url;
                     this.setProgress();
-                    this.$refs.refAudio.volume = 0.5;
+                    if (this.voiceMuteFlag) {
+                        this.$refs.refAudio.volume = 0;
+                    } else {
+                        this.$refs.refAudio.volume = this.volume;
+                    }
                 })
                 .catch( err => {
+                    console.error(err.message);
+                })
+                fetchComment (nv.id, 0,0) 
+                .then ( res=> {
+                    this.commentsNumber = res.data.total;
+                    this.setComments(createComments(res.data,nv.id));
+                    if (res.data.total < 1) {
+                        this.commentsNumber = undefined;
+                    }
+                })
+                .catch (err => {
                     console.error(err.message);
                 })
             }
@@ -144,6 +164,7 @@ export default {
     },
     methods: {
         ...mapActions([
+            'setComments',
             'setPlayFlag',
             'setPlaySong',
             'setHistoryList',
@@ -477,6 +498,22 @@ export default {
             }else{
                 return undefined
             }
+        },
+        CCommentClass() {
+            let className = 'mod_btn_comment';
+            if (!this.commentsNumber) {
+                return className;
+            }
+            if (this.commentsNumber < 100) {
+                className += ' '+'btn_comment__9';
+                return className;
+            } else {
+                if (this.commentsNumber > 999) {
+                    this.commentsNumber = '999+';
+                }
+                className += ' '+'btn_comment__99';
+                return className;
+            }
         }
     }
 }
@@ -624,6 +661,39 @@ export default {
     height: 24px;
     background-position: 0 -400px;
     @include btn_big_common();
+    &:hover{
+        background-position: 0 -460px;
+        color: #31c27c;
+    }
+}
+.btn_comment__9 {
+    background-position: -30px -400px;
+    &:hover {
+        background-position: -30px -460px;
+    }
+    .btn_comment__numbers {
+        text-align: left;
+        left: 16px;
+    }
+}
+.btn_comment__99 {
+    background-position: 0 -430px;
+    &:hover {
+        background-position: 0 -490px;
+    }
+    .btn_comment__numbers {
+        text-align: left;
+        left: 11px;
+    }
+}
+.btn_comment__numbers {
+    position: absolute;
+    top: -3px;
+    right: 0;
+    white-space: nowrap;
+    text-align: right;
+    height: 8px;
+    line-height: 8px;
 }
 .btn_big_only{
     top: 3px;
