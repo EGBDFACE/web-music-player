@@ -174,21 +174,36 @@ export default {
         'setSearchResult'
       ]),
       setPlay(value){
-        if (this.onPlaySong.id == value.id) {
-          document.getElementsByTagName('audio')[0].play();
-        } else {
+        if (Object.prototype.toString.call(value) === '[object Array]') {
           this.setPlayList(value);
-          if(Object.prototype.toString.call(value) === '[object Array]'){
-            for(let i=0; i<value.length; i++){
-              if(value[i].available){
-                this.setPlaySong(value[i]);
-                break;
-              }
+          for(let i=0; i<value.length; i++) {
+            if (value[i].available) {
+              this.setPlaySong(value[i]);
+              break;
             }
-          }else{
+          }
+        } else {
+          if (this.onPlaySong.id == value.id) {
+            document.getElementsByTagName('audio')[0].play();
+          } else {
             this.setPlaySong(value);
           }
         }
+        // if (this.onPlaySong.id == value.id) {
+        //   document.getElementsByTagName('audio')[0].play();
+        // } else {
+        //   this.setPlayList(value);
+        //   if(Object.prototype.toString.call(value) === '[object Array]'){
+        //     for(let i=0; i<value.length; i++){
+        //       if(value[i].available){
+        //         this.setPlaySong(value[i]);
+        //         break;
+        //       }
+        //     }
+        //   }else{
+        //     this.setPlaySong(value);
+        //   }
+        // }
         this.setPlayFlag(true);
       },
       setPause() {
