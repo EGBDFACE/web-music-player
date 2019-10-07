@@ -86,7 +86,7 @@
 <script>
 // import axios from 'axios';
 import { mapActions,mapState } from 'vuex';
-import { fetchArtistSongs, fetchComment, fetchSongAudio } from '@/api';
+import { fetchComment, fetchSongAudio } from '@/api';
 import { createHotSongList } from '@/utils/song';
 import { createComments } from '@/utils/comment';
 // import { BASE_URL } from '@/assets/constant.js';
@@ -164,6 +164,7 @@ export default {
     },
     methods: {
         ...mapActions([
+            'fetchArtistSongs',
             'setComments',
             'setPlayFlag',
             'setPlaySong',
@@ -212,18 +213,19 @@ export default {
             this.setSearchResult([]);
             this.setSearchContext(artist.name);
             this.setSearchLoadingFlag(true);
-            fetchArtistSongs(artist.id)
-            .then( res => {
-                createHotSongList(res.data.hotSongs)
-                .then( result => {
-                    this.setSearchLoadingFlag(false);
-                    this.setSearchResult(result);
-                })
-                .catch( err => {
-                    console.log(err.message);
-                    this.setSearchLoadingFlag(false);
-                })
-            })
+            this.fetchArtistSongs(artist.id);
+            // fetchArtistSongs(artist.id)
+            // .then( res => {
+            //     createHotSongList(res.data.hotSongs)
+            //     .then( result => {
+            //         this.setSearchLoadingFlag(false);
+            //         this.setSearchResult(result);
+            //     })
+            //     .catch( err => {
+            //         console.log(err.message);
+            //         this.setSearchLoadingFlag(false);
+            //     })
+            // })
         },
         // next(){
         //     const list = this.onPlaySongList;

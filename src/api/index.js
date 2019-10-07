@@ -53,13 +53,13 @@ export function fetchSearchHot(){
         url: '/search/hot'
     })
 }
-export function fetchArtistSongs(artistId){
-    return axios({
-        method: 'get',
-        baseURL: BASE_URL,
-        url: `/artists?id=${artistId}`
-    })
-}
+// export function fetchArtistSongs(artistId){
+//     return axios({
+//         method: 'get',
+//         baseURL: BASE_URL,
+//         url: `/artists?id=${artistId}`
+//     })
+// }
 export function fetchArtistMvs(artistId){
     return axios({
         method: 'get',

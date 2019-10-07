@@ -71,8 +71,8 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import { fetchArtistSongs } from '@/api';
-import { createHotSongList } from '@/utils/song';
+// import { fetchArtistSongs } from '@/api';
+// import { createHotSongList } from '@/utils/song';
 
 export default {
     name: 'SongList',
@@ -166,6 +166,7 @@ export default {
     },
     methods: {
       ...mapActions([
+        'fetchArtistSongs',
         'setPlayList',
         'setPlaySong',
         'setPlayFlag',
@@ -306,26 +307,27 @@ export default {
         this.setList(this.list);
       },
       MHandleArtistClick(artist){
-        if(this.$router.path !== '/search'){
+        if(this.$route.path !== '/search'){
           this.$router.push('/search');
         }
         // console.log(artist);
         this.setSearchResult([]);
         this.setSearchContext(artist.name);
         this.setSearchLoadingFlag(true);
-        fetchArtistSongs(artist.id)
-        .then( res => {
-          createHotSongList(res.data.hotSongs)
-          .then( result => {
-            // this.showLoading
-            this.setSearchLoadingFlag(false);
-            this.setSearchResult(result);
-          })
-          .catch( err => {
-            this.setSearchLoadingFlag(false);
-            console.error(err.message);
-          })
-        })
+        this.fetchArtistSongs(artist.id);
+        // fetchArtistSongs(artist.id)
+        // .then( res => {
+        //   createHotSongList(res.data.hotSongs)
+        //   .then( result => {
+        //     // this.showLoading
+        //     this.setSearchLoadingFlag(false);
+        //     this.setSearchResult(result);
+        //   })
+        //   .catch( err => {
+        //     this.setSearchLoadingFlag(false);
+        //     console.error(err.message);
+        //   })
+        // })
       }
       // setAllItemsSelected(value){
       //   // console.log(value);

@@ -46,7 +46,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { fetchAlbumDetail, fetchArtistSongs, fetchSongDetail, fetchSongLyric } from '@/api';
+import { fetchAlbumDetail, fetchSongDetail, fetchSongLyric } from '@/api';
 import { createHotSongList } from '@/utils/song';
 
 export default {
@@ -137,6 +137,7 @@ export default {
     },
     methods: {
         ...mapActions([
+            'fetchArtistSongs',
             'setSearchContext',
             'setSearchLoadingFlag',
             'setSearchResult'
@@ -206,18 +207,19 @@ export default {
             this.setSearchResult([]);
             this.setSearchContext(artist.name);
             this.setSearchLoadingFlag(true);
-            fetchArtistSongs(artist.id)
-            .then( res => {
-                createHotSongList(res.data.hotSongs)
-                .then( result => {
-                    this.setSearchLoadingFlag(false);
-                    this.setSearchResult(result);
-                })
-                .catch( err => {
-                    console.error(err.message);
-                    this.setSearchLoadingFlag(false);
-                })
-            })
+            this.fetchArtistSongs(artist.id);
+            // fetchArtistSongs(artist.id)
+            // .then( res => {
+            //     createHotSongList(res.data.hotSongs)
+            //     .then( result => {
+            //         this.setSearchLoadingFlag(false);
+            //         this.setSearchResult(result);
+            //     })
+            //     .catch( err => {
+            //         console.error(err.message);
+            //         this.setSearchLoadingFlag(false);
+            //     })
+            // })
         },
         MHandleAlbumClick(album){
             if(this.$router.path !== '/search'){

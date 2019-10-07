@@ -1,7 +1,8 @@
 import axios from 'axios';
 // import * as constant from '@/assets/constant';
 import { BASE_URL } from '@/assets/constant';
-import * as types from '../mutationTypes';
+import * as types from '@/store/mutationTypes';
+import { createHotSongList } from '@/utils/song';
 
 const search = {
     state: {
@@ -72,6 +73,27 @@ const search = {
         },
         setSearchLoadingFlag({commit},value){
             commit(types.SET_SEARCH_LOADING_FLAG,value);
+        },
+        fetchArtistSongs({commit},artistID){
+            axios({
+                method: 'get',
+                baseURL: BASE_URL,
+                url: `/artists?id=${artistID}`
+            })
+            .then( res => {
+                createHotSongList(res.data.hotSongs)
+                .then( result => {
+                    commit(types.SET_SEARCH_LOADING_FLAG,false);
+                    commit(types.SET_SEARCH_RESULT,result);
+                })
+                .catch( err => {
+                    console.error(err.message);
+                    commit(types.SET_SEARCH_LOADING_FLAG,false);
+                })
+            })
+            .catch( err => {
+                console.error(err.message);
+            })
         }
         // selSearchResultItem({commit,state},index){
         //     console.log(state);

@@ -69,7 +69,7 @@
 <script>
 import { mapActions,mapState,mapGetters, mapMutations } from 'vuex';
 import { fetchCheckMusic, fetchSearchHot, fetchSearchResult, 
-    fetchSearchSuggest, fetchArtistSongs, fetchArtistMvs,
+    fetchSearchSuggest, fetchArtistMvs,
     fetchArtistAlbums, fetchArtistDesc, fetchPlaylistDetail,
     fetchAlbumDetail, fetchMvDetail } from '@/api';
 import store from '@/store';
@@ -152,29 +152,30 @@ export default {
                     })
                     break;
                 case 'artists':
-                    fetchArtistSongs(value.id)
-                    .then( res => {
-                        // this.setArtistInfo(res.data.artist);
-                        // this.setArtistSongs(res.data);
-                        // console.log(res);
-                        createHotSongList(res.data.hotSongs)
-                        .then( result => {
-                            // console.log(result);
-                            // this.showLoadingMaskFlag = false;
-                            this.setSearchLoadingFlag(false);
-                            this.setSearchResult(result);
-                        })
-                        .catch( err => {
-                            // this.showLoadingMaskFlag = false;
-                            this.setSearchLoadingFlag(false);
-                            console.error(err.message);
-                        })
-                    })
-                    .catch( err => {
-                        // this.showLoadingMaskFlag = false;
-                        this.setSearchLoadingFlag(false);
-                        console.error(err.message);
-                    })
+                    this.fetchArtistSongs(value.id);
+                    // fetchArtistSongs(value.id)
+                    // .then( res => {
+                    //     // this.setArtistInfo(res.data.artist);
+                    //     // this.setArtistSongs(res.data);
+                    //     // console.log(res);
+                    //     createHotSongList(res.data.hotSongs)
+                    //     .then( result => {
+                    //         // console.log(result);
+                    //         // this.showLoadingMaskFlag = false;
+                    //         this.setSearchLoadingFlag(false);
+                    //         this.setSearchResult(result);
+                    //     })
+                    //     .catch( err => {
+                    //         // this.showLoadingMaskFlag = false;
+                    //         this.setSearchLoadingFlag(false);
+                    //         console.error(err.message);
+                    //     })
+                    // })
+                    // .catch( err => {
+                    //     // this.showLoadingMaskFlag = false;
+                    //     this.setSearchLoadingFlag(false);
+                    //     console.error(err.message);
+                    // })
                     break;
                 case 'albums':
                     fetchAlbumDetail(value.id)
@@ -393,6 +394,7 @@ export default {
             // 'setArtistInfo',
             // 'setArtistMvs',
             // 'setArtistSongs',
+            'fetchArtistSongs',
             'setPlayList',
             'setPlaySong',
             'setPlayFlag',
